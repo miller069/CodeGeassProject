@@ -42,6 +42,9 @@ private:
 // allows other parts of the program to call these 
 public:
 
+    // Default constructor used when creating arrays of GameSession objects
+    GameSession();
+
     // constructor creates new GameSession and initializes its values
     GameSession(std::string session_id, std::string game_id);
 

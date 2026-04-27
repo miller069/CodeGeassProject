@@ -9,7 +9,19 @@
 #include "game_session.h"
 
 
-// Constructor initializes session ID, game ID, player count, active status
+// Default constructor that creates an empty and inactive session
+GameSession::GameSession() {
+    session_id = "";
+    game_id = "";
+    player_count = 0;
+    active = false;
+
+    for (int i = 0; i < MAX_PLAYERS; i++) {
+        scores[i] = 0;
+    }
+}
+
+// Constructor initializes session ID, game ID, player count, active status; creates a real session that can run
 GameSession::GameSession(std::string session_id, std::string game_id) {
     this->session_id = session_id;
     this->game_id = game_id;
