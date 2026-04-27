@@ -1,3 +1,10 @@
+// game_session.h
+// April 27th 2026
+// Ryan Miller (Code Geass)
+
+
+
+
 // Prevents the header file from being included multiple times during compilation
 #ifndef GAME_SESSION_H
 #define GAME_SESSION_H
