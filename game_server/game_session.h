@@ -4,41 +4,45 @@
 
 
 
-
-// Prevents the header file from being included multiple times during compilation
+// used to prevent including the file multiple times during compilation
 #ifndef GAME_SESSION_H
 #define GAME_SESSION_H
 
-// Standard libraries used for storing session information
-#include <string>   // for session IDs, game IDs, and player IDs
-#include <vector>   // for storing a list of players in the session
-#include <map>      // for storing player scores mapped to player IDs
+// string library, to include player IDs, Game IDs, etc
+#include <string>
+
+#define MAX_PLAYERS 50
 
 
-// Represents a single multiplayer game session and tracks its players and scores
+// class definition for GameSession; represnts one multiplayer session
 class GameSession {
 
+// can only be used in this class [encapsulation]    
 private:
 
-    // Unique identifier for the session
+    // stores the ID of the session, should be uniqe
     std::string session_id;
 
-    // Identifier for the game being played
+    // used to stores ID of game being played
     std::string game_id;
 
-    // List of players currently in the session
-    std::vector<std::string> players;
+    // Array used for storing players in the session
+    std::string players[MAX_PLAYERS];
 
-    // Stores each player's score using their player ID as the key
-    std::map<std::string, int> scores;
+    // Array storing player scores
+    int scores[MAX_PLAYERS];
 
-    // Indicates whether the session is still active
+    // Current number of players in the session
+    int player_count;
+
+    // Indicates whether the session is active
     bool active;
 
 
+// allows other parts of the program to call these 
 public:
 
-    // Constructor that initializes a new game session with a session ID and game ID
+    // constructor creates new GameSession and initializes its values
     GameSession(std::string session_id, std::string game_id);
 
     // Adds a player to the session
@@ -47,22 +51,23 @@ public:
     // Removes a player from the session
     void removePlayer(std::string player_id);
 
-    // Updates the score for a specific player in the session
+    // Updates score of a player
     void updateScore(std::string player_id, int score);
 
-    // Returns the list of players currently in the session
-    std::vector<std::string> getPlayers();
+    // Returns the number of players currently in the sesion 
+    int getPlayerCount();
 
-    // Returns all player scores for the session
-    std::map<std::string, int> getScores();
+    // Returns a player at a spec positoin in array
+    std::string getPlayer(int index);
 
-    // Ends the session and marks it as inactive
+    // Returns a player's score at spec position
+    int getScore(int index);
+
+    // Ends the session
     void endSession();
 
-    // Returns whether the session is currently active
+    // Checks if session is active
     bool isActive();
 };
 
-
-// End of the header guard
 #endif
