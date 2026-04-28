@@ -10,6 +10,7 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from data_structures.trie import Trie
+from data_structures.array_list import ArrayList
 
 
 def test_insert_and_contains():
@@ -28,7 +29,9 @@ def test_prefix_search_basic():
     t.insert("bob",   "p003")
 
     al_results = t.prefix_search("al")
-    names = [name for name, pid in al_results]
+    names = ArrayList()
+    for name, pid in al_results:
+        names.append(name)
     assert "alice" in names, "alice should appear in prefix_search('al')"
     assert "alex"  in names, "alex should appear in prefix_search('al')"
     assert "bob" not in names, "bob should NOT appear in prefix_search('al')"
@@ -47,7 +50,9 @@ def test_prefix_search_empty_prefix():
     t.insert("carol", "p003")
 
     results = t.prefix_search("")
-    names = [name for name, pid in results]
+    names = ArrayList()
+    for name, pid in results:
+        names.append(name)
     assert "alice" in names
     assert "bob"   in names
     assert "carol" in names
@@ -79,10 +84,15 @@ def test_insert_duplicate():
 
 
 if __name__ == "__main__":
-    tests = [(k, v) for k, v in sorted(globals().items())
-             if k.startswith("test_") and callable(v)]
-    passed = failed = 0
-    for name, fn in tests:
+    all_tests = ArrayList()
+    for name in sorted(dir()):
+        obj = globals().get(name)
+        if name.startswith("test_") and callable(obj):
+            all_tests.append((name, obj))
+
+    passed = 0
+    failed = 0
+    for name, fn in all_tests:
         try:
             fn()
             passed += 1

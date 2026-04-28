@@ -26,8 +26,8 @@ SEED = 42
 def generate_sessions(n, seed=SEED):
     rng      = random.Random(seed)
     sessions = ArrayList()
-    games    = ["snake", "tetris", "pong", "pacman", "breakout"]
-    outcomes = ["win", "loss", "draw"]
+    games    = ("snake", "tetris", "pong", "pacman", "breakout")
+    outcomes = ("win", "loss", "draw")
     year     = 2025
     for i in range(n):
         month = rng.randint(1, 12)
@@ -48,7 +48,7 @@ def generate_sessions(n, seed=SEED):
 def benchmark_sorting(sizes=None):
     """Compare Mergesort vs Heapsort on score field. Saves sorting_benchmark.png."""
     if sizes is None:
-        sizes = [1000, 5000, 10000, 50000, 100000]
+        sizes = (1000, 5000, 10000, 50000, 100000)
 
     ms = Mergesort()
     hs = Heapsort()
@@ -92,7 +92,7 @@ def benchmark_sorting(sizes=None):
 def benchmark_range_query(sizes=None):
     """Compare linear scan vs sort-then-filter for scores in [3000, 7000]. Saves range_benchmark.png."""
     if sizes is None:
-        sizes = [1000, 5000, 10000, 50000, 100000]
+        sizes = (1000, 5000, 10000, 50000, 100000)
 
     ms = Mergesort()
     LO, HI = 3000, 7000

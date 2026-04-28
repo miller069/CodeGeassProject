@@ -10,6 +10,7 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from data_structures.circular_buffer import CircularBuffer
+from data_structures.array_list import ArrayList
 
 
 def test_push_and_get_recent():
@@ -62,10 +63,15 @@ def test_is_empty():
 
 
 if __name__ == "__main__":
-    tests = [(k, v) for k, v in sorted(globals().items())
-             if k.startswith("test_") and callable(v)]
-    passed = failed = 0
-    for name, fn in tests:
+    all_tests = ArrayList()
+    for name in sorted(dir()):
+        obj = globals().get(name)
+        if name.startswith("test_") and callable(obj):
+            all_tests.append((name, obj))
+
+    passed = 0
+    failed = 0
+    for name, fn in all_tests:
         try:
             fn()
             passed += 1
