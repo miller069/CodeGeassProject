@@ -1,47 +1,22 @@
 """
-sorting/heapsort.py - In-place max-heap sort
+Max-heap sort using ArrayList.
+Supports a key function and reverse=True for descending order.
 
 Author: Ibrahim Chatila
-Date:   2026-04-26
-Project: The Arcade — ECE 3822
-
-No sorted(), list.sort(), heapq, or collections used.
+Date: 2026-04-26
 """
+
+from data_structures.array_list import ArrayList
 
 
 class Heapsort:
-    """
-    O(n log n) heap sort using a binary max-heap.
-
-    Supports an optional key function and reverse=True for descending
-    order (useful for leaderboard rankings).
-
-    Usage
-    -----
-        hs = Heapsort()
-        top_scores = hs.sort(data, key=lambda x: x['score'], reverse=True)
-    """
 
     def sort(self, arr, key=None, reverse=False):
-        """
-        Return a new list containing elements of arr in sorted order.
-
-        Args:
-            arr     : list — input data (not modified).
-            key     : callable or None — key function for comparisons.
-            reverse : bool — True → descending order (default False).
-
-        Returns:
-            list — new sorted list.
-
-        Time complexity: O(n log n)
-        Space complexity: O(n)
-        """
+        """Return a new sorted ArrayList. Use reverse=True for descending order."""
         if key is None:
             key = lambda x: x
 
-        # Work on a copy so we never mutate the caller's list
-        work = []
+        work = ArrayList()
         for item in arr:
             work.append(item)
 
@@ -49,49 +24,32 @@ class Heapsort:
         if n <= 1:
             return work
 
-        # Build max-heap
         self.__build_heap(work, key)
 
-        # Extract elements one by one: swap root (max) with last,
-        # shrink heap, sift down
         for end in range(n - 1, 0, -1):
-            work[0], work[end] = work[end], work[0]
+            tmp       = work[0]
+            work[0]   = work[end]
+            work[end] = tmp
             self.__sift_down(work, 0, end, key)
 
-        # Heapsort naturally produces ascending order.
-        # If caller wants descending, reverse the result.
         if reverse:
             left  = 0
             right = n - 1
             while left < right:
-                work[left], work[right] = work[right], work[left]
+                tmp         = work[left]
+                work[left]  = work[right]
+                work[right] = tmp
                 left  += 1
                 right -= 1
 
         return work
 
-    # ------------------------------------------------------------------
-    # Private helpers
-    # ------------------------------------------------------------------
-
     def __build_heap(self, arr, key):
-        """
-        Convert arr into a max-heap in O(n) time by sifting down
-        every non-leaf node from the bottom up.
-        """
         n = len(arr)
-        # Last non-leaf index is (n // 2) - 1
         for i in range(n // 2 - 1, -1, -1):
             self.__sift_down(arr, i, n, key)
 
     def __sift_down(self, arr, i, n, key):
-        """
-        Restore the max-heap property by sifting arr[i] downward.
-
-        Only indices [0, n) are considered part of the active heap.
-
-        Time complexity: O(log n)
-        """
         while True:
             largest = i
             left    = 2 * i + 1
@@ -103,7 +61,9 @@ class Heapsort:
                 largest = right
 
             if largest == i:
-                break   # heap property satisfied
+                break
 
-            arr[i], arr[largest] = arr[largest], arr[i]
+            tmp          = arr[i]
+            arr[i]       = arr[largest]
+            arr[largest] = tmp
             i = largest

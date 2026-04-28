@@ -1,9 +1,8 @@
 """
-tests/test_match_history.py - Unit tests for MatchHistoryService
+Unit tests for MatchHistoryService.
 
 Author: Ibrahim Chatila
-Date:   2026-04-26
-Project: The Arcade — ECE 3822
+Date: 2026-04-26
 """
 
 import sys
@@ -11,6 +10,7 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from platform_server.match_history_service import MatchHistoryService
+from data_structures.array_list import ArrayList
 
 
 def _make_session(sid, pid, gid, start, end, score, outcome):
@@ -24,10 +24,6 @@ def _make_session(sid, pid, gid, start, end, score, outcome):
         "outcome":    outcome,
     }
 
-
-# ---------------------------------------------------------------------------
-# Tests
-# ---------------------------------------------------------------------------
 
 def test_add_and_get_history():
     svc = MatchHistoryService()
@@ -44,15 +40,16 @@ def test_add_and_get_history():
 
 def test_results_sorted_by_date():
     svc = MatchHistoryService()
-    # Insert out-of-order
+    # inserted out of order on purpose
     svc.add_session(_make_session("s3", "p1", "snake",  "2025-04-01", "2025-04-01", 150, "win"))
     svc.add_session(_make_session("s1", "p1", "snake",  "2025-01-01", "2025-01-01", 100, "loss"))
     svc.add_session(_make_session("s2", "p1", "tetris", "2025-02-15", "2025-02-15", 200, "win"))
 
     history = svc.get_history("p1")
-    dates = [s["start_time"] for s in history]
-    assert dates == ["2025-01-01", "2025-02-15", "2025-04-01"], \
-        f"Dates not sorted: {dates}"
+    assert len(history) == 3
+    assert history[0]["start_time"] == "2025-01-01", f"Expected 2025-01-01, got {history[0]['start_time']}"
+    assert history[1]["start_time"] == "2025-02-15", f"Expected 2025-02-15, got {history[1]['start_time']}"
+    assert history[2]["start_time"] == "2025-04-01", f"Expected 2025-04-01, got {history[2]['start_time']}"
     print("PASS test_results_sorted_by_date")
 
 
@@ -99,15 +96,16 @@ def test_filter_by_date_range():
     print("PASS test_filter_by_date_range")
 
 
-# ---------------------------------------------------------------------------
-# Runner
-# ---------------------------------------------------------------------------
-
 if __name__ == "__main__":
-    tests = [(k, v) for k, v in sorted(globals().items())
-             if k.startswith("test_") and callable(v)]
-    passed = failed = 0
-    for name, fn in tests:
+    all_tests = ArrayList()
+    for name in sorted(dir()):
+        obj = globals().get(name)
+        if name.startswith("test_") and callable(obj):
+            all_tests.append((name, obj))
+
+    passed = 0
+    failed = 0
+    for name, fn in all_tests:
         try:
             fn()
             passed += 1
