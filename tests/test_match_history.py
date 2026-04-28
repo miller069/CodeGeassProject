@@ -1,9 +1,8 @@
 """
-tests/test_match_history.py - Unit tests for MatchHistoryService
+Unit tests for MatchHistoryService.
 
 Author: Ibrahim Chatila
-Date:   2026-04-26
-Project: The Arcade — ECE 3822
+Date: 2026-04-26
 """
 
 import sys
@@ -25,10 +24,6 @@ def _make_session(sid, pid, gid, start, end, score, outcome):
     }
 
 
-# ---------------------------------------------------------------------------
-# Tests
-# ---------------------------------------------------------------------------
-
 def test_add_and_get_history():
     svc = MatchHistoryService()
     svc.add_session(_make_session("s1", "p1", "snake",   "2025-02-01", "2025-02-01", 100, "win"))
@@ -44,7 +39,7 @@ def test_add_and_get_history():
 
 def test_results_sorted_by_date():
     svc = MatchHistoryService()
-    # Insert out-of-order
+    # inserted out of order on purpose
     svc.add_session(_make_session("s3", "p1", "snake",  "2025-04-01", "2025-04-01", 150, "win"))
     svc.add_session(_make_session("s1", "p1", "snake",  "2025-01-01", "2025-01-01", 100, "loss"))
     svc.add_session(_make_session("s2", "p1", "tetris", "2025-02-15", "2025-02-15", 200, "win"))
@@ -98,10 +93,6 @@ def test_filter_by_date_range():
         assert "2025-01-01" <= s["start_time"] <= "2025-06-01"
     print("PASS test_filter_by_date_range")
 
-
-# ---------------------------------------------------------------------------
-# Runner
-# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
     tests = [(k, v) for k, v in sorted(globals().items())
