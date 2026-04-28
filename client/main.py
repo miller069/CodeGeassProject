@@ -12,6 +12,12 @@ Or run from inside client/:
 """
 
 import pygame
+import os
+import sys
+
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
 
 from api_client import ApiClient
 from game_launcher import GameLauncher
@@ -20,6 +26,7 @@ from screens.catalog_screen import CatalogScreen
 from screens.profile_screen import ProfileScreen
 from screens.leaderboard_screen import LeaderboardScreen
 from screens.match_history_screen import MatchHistoryScreen
+from data_structures.hash_table import HashTable
 
 
 class ArcadeClientApp:
@@ -44,7 +51,7 @@ class ArcadeClientApp:
         self.current_user = None
         self.selected_game_id = "snake"
 
-        self.screens = {}
+        self.screens = HashTable()
         self.current_screen = None
         self.current_screen_name = "login"
 
@@ -52,16 +59,16 @@ class ArcadeClientApp:
         self.change_screen("login")
 
     def build_screens(self):
-        self.screens["login"] = LoginScreen(self)
-        self.screens["catalog"] = CatalogScreen(self)
-        self.screens["profile"] = ProfileScreen(self)
-        self.screens["leaderboard"] = LeaderboardScreen(self)
-        self.screens["history"] = MatchHistoryScreen(self)
+        self.screens.insert("login", LoginScreen(self))
+        self.screens.insert("catalog", CatalogScreen(self))
+        self.screens.insert("profile", ProfileScreen(self))
+        self.screens.insert("leaderboard", LeaderboardScreen(self))
+        self.screens.insert("history", MatchHistoryScreen(self))
 
     def change_screen(self, name):
-        if name in self.screens:
+        if self.screens.contains(name):
             self.current_screen_name = name
-            self.current_screen = self.screens[name]
+            self.current_screen = self.screens.get(name)
 
     def handle_events(self):
         for event in pygame.event.get():

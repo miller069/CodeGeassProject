@@ -18,18 +18,18 @@ class LoginScreen:
 
         if self.login_button.is_clicked(event):
             result = self.app.api.login(self.username_input.text, self.password_input.text)
-            self.message = result["message"]
-            self.message_color = GREEN if result["success"] else RED
-            if result["success"]:
-                self.app.current_user = result["user"]
+            self.message = result.message
+            self.message_color = GREEN if result.success else RED
+            if result.success:
+                self.app.current_user = result.user
                 self.app.change_screen("catalog")
 
         if self.create_button.is_clicked(event):
             result = self.app.api.create_account(self.username_input.text, self.password_input.text)
-            self.message = result["message"]
-            self.message_color = GREEN if result["success"] else RED
-            if result["success"]:
-                self.app.current_user = result["user"]
+            self.message = result.message
+            self.message_color = GREEN if result.success else RED
+            if result.success:
+                self.app.current_user = result.user
                 self.app.change_screen("catalog")
 
     def update(self):

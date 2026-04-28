@@ -1,5 +1,13 @@
+import os
+import sys
 import pygame
+
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
 from ui_helpers import BACKGROUND, BLACK, DARK_GRAY, CARD, Button, draw_text
+from data_structures.array_list import ArrayList
 
 
 class LeaderboardScreen:
@@ -7,10 +15,10 @@ class LeaderboardScreen:
         self.app = app
         self.back_button = Button(40, 560, 120, 42, "Back")
 
-        self.game_buttons = []
+        self.game_buttons = ArrayList()
         x = 40
         for game in self.app.api.get_games():
-            self.game_buttons.append((Button(x, 100, 135, 36, game["game_id"]), game["game_id"]))
+            self.game_buttons.append((Button(x, 100, 135, 36, game.game_id), game.game_id))
             x += 150
 
     def handle_event(self, event):
@@ -47,9 +55,9 @@ class LeaderboardScreen:
             for row in rows:
                 pygame.draw.rect(surface, CARD, pygame.Rect(70, y, 740, 38))
                 pygame.draw.rect(surface, (210, 210, 210), pygame.Rect(70, y, 740, 38), 1)
-                draw_text(surface, row["rank"], self.app.font, BLACK, 105, y + 7)
-                draw_text(surface, row["username"], self.app.font, BLACK, 250, y + 7)
-                draw_text(surface, row["score"], self.app.font, BLACK, 595, y + 7)
+                draw_text(surface, row.rank, self.app.font, BLACK, 105, y + 7)
+                draw_text(surface, row.username, self.app.font, BLACK, 250, y + 7)
+                draw_text(surface, row.score, self.app.font, BLACK, 595, y + 7)
                 y += 42
 
         draw_text(surface, "Uses teammate LeaderboardService with MaxHeap and AVLTree.", self.app.small_font, DARK_GRAY, 80, 525)

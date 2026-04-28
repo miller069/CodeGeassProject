@@ -1,4 +1,12 @@
+import os
+import sys
+
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
 from ui_helpers import BACKGROUND, BLACK, DARK_GRAY, Button, draw_text
+from data_structures.array_list import ArrayList
 
 
 class ProfileScreen:
@@ -17,18 +25,18 @@ class ProfileScreen:
         surface.fill(BACKGROUND)
         draw_text(surface, "Player Profile", self.app.title_font, BLACK, 40, 35)
 
-        profile = self.app.api.get_profile(self.app.current_user["player_id"])
-        lines = [
-            "Display Name: " + profile["display_name"],
-            "Username: " + profile["username"],
-            "Player ID: " + profile["player_id"],
-            "Games Played: " + str(profile["games_played"]),
-            "Wins: " + str(profile["wins"]),
-            "Losses: " + str(profile["losses"]),
-            "Win Rate: " + profile["win_rate"],
-            "Total Score: " + str(profile["total_score"]),
-            "Favorite Game: " + profile["favorite_game"],
-        ]
+        profile = self.app.api.get_profile(self.app.current_user.get_player_id())
+
+        lines = ArrayList()
+        lines.append("Display Name: " + profile.display_name)
+        lines.append("Username: " + profile.username)
+        lines.append("Player ID: " + profile.player_id)
+        lines.append("Games Played: " + str(profile.games_played))
+        lines.append("Wins: " + str(profile.wins))
+        lines.append("Losses: " + str(profile.losses))
+        lines.append("Win Rate: " + profile.win_rate)
+        lines.append("Total Score: " + str(profile.total_score))
+        lines.append("Favorite Game: " + profile.favorite_game)
 
         y = 130
         for line in lines:
