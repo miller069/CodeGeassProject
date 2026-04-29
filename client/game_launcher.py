@@ -32,5 +32,26 @@ class GameLauncher:
             self.last_message = "Launched Baseball Game"
             return self.last_message
 
+        elif game_id == "ibrahim_game":
+            game_dir = os.path.join(
+                self.client_dir,
+                "Games",
+                "npc-dialog"
+            )
+
+            main_file = os.path.join(game_dir, "main.py")
+
+            if not os.path.isfile(main_file):
+                self.last_message = "Could not find npc-dialog game main.py"
+                return self.last_message
+
+            subprocess.Popen(
+                [sys.executable, main_file, str(player_id)],
+                cwd=game_dir
+            )
+
+            self.last_message = "Launched NPC Dialog Game"
+            return self.last_message
+
         self.last_message = "Game not connected yet: " + str(game_id)
         return self.last_message
