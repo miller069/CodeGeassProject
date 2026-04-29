@@ -30,9 +30,6 @@ class LeaderboardScreen:
             if button.is_clicked(event):
                 self.app.selected_game_id = game_id
 
-    def update(self):
-        pass
-
     def draw(self, surface):
         surface.fill(BACKGROUND)
         draw_text(surface, "Leaderboard", self.app.title_font, BLACK, 40, 35)
@@ -50,6 +47,14 @@ class LeaderboardScreen:
         draw_text(surface, "Score", self.app.font, BLACK, 590, 173)
 
         y = 210
+        if self.app.current_user is not None:
+            rank = self.app.api.get_player_rank(
+                self.app.selected_game_id,
+                self.app.current_user.get_player_id()
+            )
+
+            if rank is not None:
+                draw_text(surface, "Your rank: " + str(rank), self.app.small_font, DARK_GRAY, 45, 140)
         if len(rows) == 0:
             draw_text(surface, "No leaderboard data for this game yet.", self.app.font, DARK_GRAY, 90, y + 20)
         else:

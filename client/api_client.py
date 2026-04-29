@@ -241,6 +241,24 @@ class ApiClient:
         self.leaderboards = LeaderboardService()
         self.match_history = MatchHistoryService()
         self._load_sessions()
+    def get_player_rank(self, game_id, player_id):
+        return self.leaderboards.get_rank(game_id, player_id)
+    
+    def get_score_range(self, game_id, low, high):
+        entries = self.leaderboards.get_score_range(game_id, low, high)
+        rows = ArrayList()
+
+        rank = 1
+        for entry in entries:
+            player = self.players_by_id.get(entry.player_id)
+            username = entry.player_id
+            if player is not None:
+                username = player.get_display_name()
+
+            rows.append(LeaderboardRow(rank, entry.player_id, username, entry.score))
+            rank += 1
+
+        return rows
 
     def _load_sessions(self):
         path = self._data_path("sessions.csv")
