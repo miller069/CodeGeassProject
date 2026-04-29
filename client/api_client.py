@@ -1,8 +1,8 @@
 """
 client/api_client.py
 
-Simple bridge between the Pygame UI and backend services.
-Uses custom ArrayList and HashTable instead of Python lists/dicts.
+Bridge between the Pygame screens and the backend services.
+Uses custom ArrayList and HashTable instead of Python lists or dictionaries.
 """
 
 import os
@@ -13,11 +13,32 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from data_structures.array_list import ArrayList
-from data_structures.hash_table import HashTable
-from platform_server.account import AccountService
-from platform_server.leaderboard import LeaderboardService
 
+# -------------------------
+# Imports
+# -------------------------
+
+try:
+    from data_structures.array_list import ArrayList
+except ModuleNotFoundError:
+    from data_structures.arraylist import ArrayList
+
+from data_structures.hash_table import HashTable
+
+try:
+    from platform_server.account import AccountService
+except ModuleNotFoundError:
+    from platform_server.account import AccountService
+
+try:
+    from platform_server.leaderboard import LeaderboardService
+except ModuleNotFoundError:
+    from platform_server.leaderboard import LeaderboardService
+
+
+# -------------------------
+# Small data classes
+# -------------------------
 
 class GameEntry:
     def __init__(self, game_id, name, team, players, status):
@@ -116,6 +137,10 @@ class ClientSession:
         return self.player_id != "" and self.game_id != "" and self.score >= 0
 
 
+# -------------------------
+# Main API class
+# -------------------------
+
 class ApiClient:
     def __init__(self):
         self.accounts = AccountService()
@@ -130,6 +155,11 @@ class ApiClient:
         self._load_players()
         self._load_sessions()
 
+
+    # -------------------------
+    # Private helper methods
+    # -------------------------
+
     def _data_path(self, filename):
         return os.path.join(PROJECT_ROOT, "data", filename)
 
@@ -137,6 +167,9 @@ class ApiClient:
         return os.path.exists(path) and os.path.getsize(path) > 0
 
     def _get_field(self, line, index):
+        if index < 0:
+            return ""
+
         current_index = 0
         field = ""
 
@@ -156,21 +189,32 @@ class ApiClient:
 
     def _find_column(self, header, name):
         index = 0
-        current = ""
+        field = ""
 
         for ch in header:
             if ch == ",":
-                if current.strip().lower() == name:
+                if field.strip().lower() == name:
                     return index
                 index += 1
-                current = ""
+                field = ""
             else:
-                current += ch
+                field += ch
 
-        if current.strip().lower() == name:
+        if field.strip().lower() == name:
             return index
 
         return -1
+
+    def _next_free_player_id(self):
+        i = 1
+
+        while True:
+            player_id = "p" + str(i).zfill(5)
+
+            if not self.players_by_id.contains(player_id):
+                return player_id
+
+            i += 1
 
     def _add_player(self, player):
         if player.is_valid():
@@ -181,6 +225,11 @@ class ApiClient:
         if session.is_valid():
             self.sessions.append(session)
             self.leaderboards.record_session(session)
+
+
+    # -------------------------
+    # CSV loading methods
+    # -------------------------
 
     def _load_games(self):
         path = self._data_path("games.csv")
@@ -245,15 +294,15 @@ class ApiClient:
                         country = self._get_field(line, country_col)
 
                         if player_id == "":
-                            player_id = "p" + str(index).zfill(3)
+                            player_id = "p" + str(index).zfill(5)
 
                         if password == "":
                             password = "password"
 
-                        self._add_player(ClientPlayer(player_id, username, password, display_name, country))
-                        index += 1
+                        player = ClientPlayer(player_id, username, password, display_name, country)
+                        self._add_player(player)
 
-        
+                        index += 1
 
     def _load_sessions(self):
         path = self._data_path("sessions.csv")
@@ -285,7 +334,7 @@ class ApiClient:
                         outcome = self._get_field(line, outcome_col)
 
                         if session_id == "":
-                            session_id = "s" + str(index).zfill(3)
+                            session_id = "s" + str(index).zfill(6)
 
                         try:
                             score = int(float(score_text))
@@ -295,7 +344,7 @@ class ApiClient:
                         if score < 0:
                             score = 0
 
-                        self._add_session(ClientSession(
+                        session = ClientSession(
                             session_id,
                             player_id,
                             game_id,
@@ -303,25 +352,15 @@ class ApiClient:
                             start_time,
                             end_time,
                             outcome
-                        ))
+                        )
 
+                        self._add_session(session)
                         index += 1
 
-        if len(self.sessions) == 0:
-            self._add_session(ClientSession("s001", "p001", "ibrahim_game", 760, "2026-04-20", "2026-04-20", "win"))
-            self._add_session(ClientSession("s002", "p002", "ibrahim_game", 720, "2026-04-20", "2026-04-20", "loss"))
-            self._add_session(ClientSession("s003", "p003", "ibrahim_game", 690, "2026-04-21", "2026-04-21", "win"))
 
-    def _next_free_player_id(self):
-        i = 1
-
-        while True:
-            player_id = "p" + str(i).zfill(3)
-
-            if not self.players_by_id.contains(player_id):
-                return player_id
-
-            i += 1
+    # -------------------------
+    # Account methods
+    # -------------------------
 
     def _save_new_player(self, player):
         path = self._data_path("players.csv")
@@ -349,7 +388,7 @@ class ApiClient:
         player = self.accounts.login(username)
 
         if player is None:
-            return LoginResult(False, "User not found. Try Create instead.")
+            return LoginResult(False, "User not found. Please create an account.")
 
         if not player.check_password(password):
             return LoginResult(False, "Incorrect password.")
@@ -370,13 +409,18 @@ class ApiClient:
             return LoginResult(False, "Account already exists. Please log in.")
 
         player_id = self._next_free_player_id()
-        player = ClientPlayer(player_id, username, password, username.title())
+        player = ClientPlayer(player_id, username, password, username.title(), "Unknown")
 
         self._add_player(player)
         self._save_new_player(player)
 
         self.current_user = player
         return LoginResult(True, "Account created.", player)
+
+
+    # -------------------------
+    # Game catalog methods
+    # -------------------------
 
     def get_games(self):
         return self.games
@@ -387,6 +431,16 @@ class ApiClient:
                 return game.name
 
         return game_id
+
+
+    # -------------------------
+    # Leaderboard methods
+    # -------------------------
+
+    def reload_sessions(self):
+        self.leaderboards = LeaderboardService()
+        self.sessions = ArrayList()
+        self._load_sessions()
 
     def get_leaderboard(self, game_id, n=10):
         entries = self.leaderboards.get_top_n(game_id, n)
@@ -404,6 +458,43 @@ class ApiClient:
             rank += 1
 
         return rows
+
+    def get_player_rank(self, game_id, player_id):
+        return self.leaderboards.get_rank(game_id, player_id)
+
+    def get_rank_by_name(self, game_id, name):
+        name = str(name).strip().lower()
+
+        for player_id, player in self.players_by_id.items():
+            display_name = player.get_display_name().strip().lower()
+            username = player.get_username().strip().lower()
+
+            if display_name == name or username == name:
+                return self.leaderboards.get_rank(game_id, player_id)
+
+        return None
+
+    def get_score_range(self, game_id, low, high):
+        entries = self.leaderboards.get_score_range(game_id, low, high)
+        rows = ArrayList()
+        rank = 1
+
+        for entry in entries:
+            player = self.players_by_id.get(entry.player_id)
+            username = entry.player_id
+
+            if player is not None:
+                username = player.get_display_name()
+
+            rows.append(LeaderboardRow(rank, entry.player_id, username, entry.score))
+            rank += 1
+
+        return rows
+
+
+    # -------------------------
+    # Profile and history methods
+    # -------------------------
 
     def get_profile(self, player_id):
         player = self.players_by_id.get(player_id)
