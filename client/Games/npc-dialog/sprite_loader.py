@@ -16,7 +16,7 @@ class SpriteLoader:
     """Handles sprite loading for both characters and enemies with flexible organization."""
     
     @staticmethod
-    def load_character_sprites(character_name, base_path="../../graphics/characters"):
+    def load_character_sprites(character_name, base_path="graphics/characters"):
         """
         Load sprites for a character.
         
@@ -30,7 +30,7 @@ class SpriteLoader:
         return SpriteLoader._load_sprites(character_name, base_path, is_character=True)
     
     @staticmethod
-    def load_enemy_sprites(enemy_name, base_path="../../graphics/enemies"):
+    def load_enemy_sprites(enemy_name, base_path="graphics/enemies"):
         """
         Load sprites for an enemy.
 
@@ -44,7 +44,7 @@ class SpriteLoader:
         return SpriteLoader._load_sprites(enemy_name, base_path, is_character=False)
 
     @staticmethod
-    def load_npc_sprites(enemy_name, base_path="../../graphics/enemies"):
+    def load_npc_sprites(enemy_name, base_path="graphics/enemies"):
         """Deprecated: use load_enemy_sprites instead."""
         return SpriteLoader._load_sprites(enemy_name, base_path, is_character=False)
     
