@@ -197,10 +197,11 @@ class ApiClient:
 
         if len(self.games) == 0:
             defaults = ArrayList()
-            defaults.append(GameEntry("snake", "Snake Battle", "Code Geass", "1-10", "Mock Ready"))
-            defaults.append(GameEntry("pong", "Multiplayer Pong", "Code Geass", "2-10", "Mock Ready"))
-            defaults.append(GameEntry("space", "Space Shooter", "Code Geass", "1-10", "Mock Ready"))
-            defaults.append(GameEntry("maze", "Maze Runner", "Code Geass", "1-10", "Mock Ready"))
+
+            defaults.append(GameEntry("baseball", "Baseball Dash", "Nick", "1-10", "Playable"))
+            defaults.append(GameEntry("ryan_game", "Ryan's Game", "Ryan", "1-10", "Playable"))
+            defaults.append(GameEntry("chuqi_game", "Chuqi's Game", "Chuqi", "1-10", "Playable"))
+            defaults.append(GameEntry("ibrahim_game", "Ibrahim's Game", "Ibrahim", "1-10", "Playable"))
             for entry in defaults:
                 self.games.append(entry)
 

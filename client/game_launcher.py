@@ -1,23 +1,36 @@
-"""
-client/game_launcher.py
-
-Placeholder for Ryan's C++ game server connection.
-
-The UI can call launch_game(game_id, player_id) now. Later, the inside of this
-method can be replaced with a real socket connection without changing the screens.
-"""
+import os
+import sys
+import subprocess
 
 
 class GameLauncher:
     def __init__(self):
         self.last_message = ""
+        self.client_dir = os.path.dirname(__file__)
 
     def launch_game(self, game_id, player_id):
-        # Future integration idea:
-        # 1. Open socket to C++ server host/port.
-        # 2. Send player_id and game_id.
-        # 3. Wait for session assignment.
-        # 4. Start live game loop.
-        self.last_message = "Connecting player " + str(player_id) + " to game " + str(game_id) + "..."
-        print(self.last_message)
+        if game_id == "baseball":
+            game_dir = os.path.join(
+                self.client_dir,
+                "Games",
+                "baseball dash",
+                "code",
+                "game"
+            )
+
+            main_file = os.path.join(game_dir, "main.py")
+
+            if not os.path.isfile(main_file):
+                self.last_message = "Could not find baseball game main.py"
+                return self.last_message
+
+            subprocess.Popen(
+                [sys.executable, main_file, str(player_id)],
+                cwd=game_dir
+            )
+
+            self.last_message = "Launched Baseball Game"
+            return self.last_message
+
+        self.last_message = "Game not connected yet: " + str(game_id)
         return self.last_message
