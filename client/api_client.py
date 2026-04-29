@@ -237,6 +237,10 @@ class ApiClient:
         if session.is_valid():
             self.leaderboards.record_session(session)
             self.match_history.add_session(session.to_history_dict())
+    def reload_sessions(self):
+        self.leaderboards = LeaderboardService()
+        self.match_history = MatchHistoryService()
+        self._load_sessions()
 
     def _load_sessions(self):
         path = self._data_path("sessions.csv")

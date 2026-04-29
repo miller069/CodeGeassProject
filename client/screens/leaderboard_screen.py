@@ -20,7 +20,8 @@ class LeaderboardScreen:
         for game in self.app.api.get_games():
             self.game_buttons.append((Button(x, 100, 135, 36, game.game_id), game.game_id))
             x += 150
-
+    def update(self):
+        self.app.api.reload_sessions()
     def handle_event(self, event):
         if self.back_button.is_clicked(event):
             self.app.change_screen("catalog")
