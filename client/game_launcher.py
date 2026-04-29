@@ -3,9 +3,8 @@ import sys
 import subprocess
 
 
-# IP address of the machine running game_server.py
-# Change this to your teammate's IP if they are hosting the server
-# Leave as 'localhost' if YOU are running game_server.py on this machine
+# change this to whoever is running game_server.py on their machine
+# leave it as localhost if you are the one running the server
 GAME_SERVER_HOST = 'localhost'
 GAME_SERVER_PORT = 8080
 

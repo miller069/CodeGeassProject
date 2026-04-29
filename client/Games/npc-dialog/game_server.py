@@ -1,24 +1,16 @@
-"""
-game_server.py - Python multiplayer server for the NPC dialog game
-
-Run this once on ONE machine. Everyone else connects to that machine's IP.
-
-Usage:
-    python game_server.py
-    python game_server.py --port 8080
-
-How to find your IP so teammates can connect:
-    Linux/Mac:  hostname -I
-    Windows:    ipconfig
-"""
+# game_server.py
+# Ibrahim Chatila
+# run this on one machine and share your IP with teammates so they can join
+# find your IP: hostname -I on linux, ipconfig on windows
+# usage: python game_server.py
 
 import socket
 import threading
 import argparse
 import time
 
-# How often (seconds) the server broadcasts everyone's position to all clients
-BROADCAST_INTERVAL = 0.05   # 20 updates per second
+# how often the server sends everyone's position to all players (seconds)
+BROADCAST_INTERVAL = 0.05
 
 
 class GameServer:
@@ -26,16 +18,12 @@ class GameServer:
         self.host = host
         self.port = port
 
-        # player_id -> {'conn', 'addr', 'name', 'x', 'y', 'character_type', 'status'}
+        # stores each connected player by their id
         self.players = {}
         self.next_id = 1
         self.lock = threading.Lock()
 
         self.running = False
-
-    # ------------------------------------------------------------------
-    # Start / stop
-    # ------------------------------------------------------------------
 
     def start(self):
         self.running = True
@@ -45,16 +33,14 @@ class GameServer:
         self.server_sock.listen(32)
 
         print(f"Server started on port {self.port}")
-        print(f"Share YOUR IP address with teammates so they can connect")
-        print(f"  Linux/Mac:  run 'hostname -I' in another terminal")
-        print(f"  Windows:    run 'ipconfig' in another terminal")
+        print(f"Share your IP with teammates so they can connect")
+        print(f"  Linux/Mac: hostname -I")
+        print(f"  Windows: ipconfig")
         print(f"Waiting for players...")
 
-        # Broadcast loop runs in background
         broadcast_thread = threading.Thread(target=self._broadcast_loop, daemon=True)
         broadcast_thread.start()
 
-        # Accept new connections in the main thread
         while self.running:
             try:
                 conn, addr = self.server_sock.accept()
@@ -72,12 +58,7 @@ class GameServer:
         self.server_sock.close()
         print("Server stopped.")
 
-    # ------------------------------------------------------------------
-    # Client handler - runs in its own thread per connected player
-    # ------------------------------------------------------------------
-
     def _handle_client(self, conn, addr):
-        # Assign a unique ID to this player
         with self.lock:
             player_id = self.next_id
             self.next_id += 1
@@ -91,7 +72,6 @@ class GameServer:
                 'status': 'down',
             }
 
-        # Tell the client what their ID is
         self._send(conn, f"CONNECTED|{player_id}")
         print(f"Player {player_id} connected from {addr}")
 
@@ -101,27 +81,21 @@ class GameServer:
                 data = conn.recv(4096).decode('utf-8', errors='ignore')
                 if not data:
                     break
-
                 buffer += data
                 while '\n' in buffer:
                     line, buffer = buffer.split('\n', 1)
                     self._process_message(player_id, line.strip())
-
-        except Exception as e:
-            pass  # client disconnected or network error
+        except Exception:
+            pass
         finally:
             with self.lock:
                 if player_id in self.players:
                     del self.players[player_id]
             conn.close()
-            print(f"Player {player_id} disconnected  ({len(self.players)} remaining)")
-
-    # ------------------------------------------------------------------
-    # Message processing
-    # ------------------------------------------------------------------
+            print(f"Player {player_id} disconnected ({len(self.players)} remaining)")
 
     def _process_message(self, player_id, msg):
-        # Format: UPDATE|<id>|<x>|<y>|<name>|<character_type>|<status>
+        # messages from clients come in as UPDATE|id|x|y|name|character_type|status
         if not msg.startswith("UPDATE|"):
             return
 
@@ -148,10 +122,6 @@ class GameServer:
         except (ValueError, IndexError):
             pass
 
-    # ------------------------------------------------------------------
-    # Broadcast - send all player positions to everyone at 20hz
-    # ------------------------------------------------------------------
-
     def _broadcast_loop(self):
         while self.running:
             time.sleep(BROADCAST_INTERVAL)
@@ -162,8 +132,7 @@ class GameServer:
             if not self.players:
                 return
 
-            # Build STATE message in TEXT format:
-            # STATE||id|name|x|y|socket_num|character_type|status||id|name|...
+            # build the state message and send it to every connected player
             parts = ["STATE"]
             for pid, p in self.players.items():
                 entry = f"{pid}|{p['name']}|{p['x']}|{p['y']}|{pid}|{p['character_type']}|{p['status']}"
@@ -181,19 +150,13 @@ class GameServer:
             for pid in dead:
                 del self.players[pid]
 
-    # ------------------------------------------------------------------
-    # Helper
-    # ------------------------------------------------------------------
-
     def _send(self, conn, msg):
         conn.send((msg + '\n').encode('utf-8'))
 
 
-# ------------------------------------------------------------------
-
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='NPC Dialog Game Server')
-    parser.add_argument('--port', type=int, default=8080, help='Port to listen on (default: 8080)')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--port', type=int, default=8080)
     args = parser.parse_args()
 
     server = GameServer(port=args.port)
