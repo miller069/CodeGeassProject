@@ -47,6 +47,9 @@ class LeaderboardScreen:
                 self.search_text += event.unicode
 
     def draw(self, surface):
+        if self.app.current_user is None:
+            self.app.change_screen("login")
+            return
         surface.fill(BACKGROUND)
         draw_text(surface, "Leaderboard", self.app.title_font, BLACK, 40, 35)
         draw_text(surface, "Selected game: " + self.app.selected_game_id, self.app.small_font, DARK_GRAY, 45, 78)

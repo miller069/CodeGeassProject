@@ -15,6 +15,9 @@ class MatchHistoryScreen:
         pass
 
     def draw(self, surface):
+        if self.app.current_user is None:
+            self.app.change_screen("login")
+            return
         surface.fill(BACKGROUND)
         draw_text(surface, "Match History", self.app.title_font, BLACK, 40, 35)
 

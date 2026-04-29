@@ -42,6 +42,9 @@ class CatalogScreen:
         for button, game in self.game_buttons:
             if button.is_clicked(event):
                 self.app.selected_game_id = game.game_id
+                if self.app.current_user is None:
+                    self.app.change_screen("login")
+                    return
                 player_id = self.app.current_user.get_player_id()
                 self.launch_message = self.app.launcher.launch_game(game.game_id, player_id)
 
@@ -49,6 +52,9 @@ class CatalogScreen:
         pass
 
     def draw(self, surface):
+        if self.app.current_user is None:
+            self.app.change_screen("login")
+            return
         surface.fill(BACKGROUND)
         draw_text(surface, "Game Catalog", self.app.title_font, BLACK, 40, 35)
 
