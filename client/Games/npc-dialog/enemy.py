@@ -35,7 +35,7 @@ ENEMY_SPAWN_DATA = [
         "notice_radius": 150, "attack_radius": 50,
     },
     {
-        "name": "Temple Priest",
+        "name": "Town Elder",
         "spawn": (14, 17),
         "waypoints": [(13, 16), (15, 16), (15, 18), (13, 18)],
         "patrol_type": "circular",
