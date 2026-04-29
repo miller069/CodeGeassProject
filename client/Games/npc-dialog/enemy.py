@@ -21,7 +21,7 @@ ENEMY_SPAWN_DATA = [
         "patrol_type": "circular",
         "speed": 1,
         "description": "Patrols the forest perimeter",
-        "health": 60,  "exp": 30, "attack_damage": 8,
+        "health": 72,  "exp": 30, "attack_damage": 10,
         "notice_radius": 150, "attack_radius": 60,
     },
     {
@@ -31,7 +31,7 @@ ENEMY_SPAWN_DATA = [
         "patrol_type": "back_and_forth",
         "speed": 0.9,
         "description": "Paces nervously in the village square",
-        "health": 40,  "exp": 20, "attack_damage": 5,
+        "health": 48,  "exp": 20, "attack_damage": 6,
         "notice_radius": 150, "attack_radius": 50,
     },
     {
@@ -41,7 +41,7 @@ ENEMY_SPAWN_DATA = [
         "patrol_type": "circular",
         "speed": 0.8,
         "description": "Walks meditatively around the temple",
-        "health": 40,  "exp": 20, "attack_damage": 5,
+        "health": 48,  "exp": 20, "attack_damage": 6,
         "notice_radius": 150, "attack_radius": 50,
     },
     {
@@ -51,7 +51,7 @@ ENEMY_SPAWN_DATA = [
         "patrol_type": "back_and_forth",
         "speed": 1,
         "description": "Patrols the dungeon corridor",
-        "health": 80,  "exp": 40, "attack_damage": 12,
+        "health": 96,  "exp": 40, "attack_damage": 14,
         "notice_radius": 150, "attack_radius": 60,
     },
     {
@@ -61,7 +61,7 @@ ENEMY_SPAWN_DATA = [
         "patrol_type": "back_and_forth",
         "speed": 0.8,
         "description": "Arranges goods in the market",
-        "health": 40,  "exp": 20, "attack_damage": 5,
+        "health": 48,  "exp": 20, "attack_damage": 6,
         "notice_radius": 150, "attack_radius": 50,
     },
     {
@@ -71,7 +71,7 @@ ENEMY_SPAWN_DATA = [
         "patrol_type": "random",
         "speed": 1.2,
         "description": "Roams the open plains unpredictably",
-        "health": 50,  "exp": 25, "attack_damage": 10,
+        "health": 60,  "exp": 25, "attack_damage": 12,
         "notice_radius": 150, "attack_radius": 70,
     },
 ]
