@@ -3,6 +3,13 @@ import sys
 import subprocess
 
 
+# IP address of the machine running game_server.py
+# Change this to your teammate's IP if they are hosting the server
+# Leave as 'localhost' if YOU are running game_server.py on this machine
+GAME_SERVER_HOST = 'localhost'
+GAME_SERVER_PORT = 8080
+
+
 class GameLauncher:
     def __init__(self):
         self.last_message = ""
@@ -46,7 +53,9 @@ class GameLauncher:
                 return self.last_message
 
             subprocess.Popen(
-                [sys.executable, main_file, str(player_id)],
+                [sys.executable, main_file, str(player_id),
+                 '--server', GAME_SERVER_HOST,
+                 '--port', str(GAME_SERVER_PORT)],
                 cwd=game_dir
             )
 
