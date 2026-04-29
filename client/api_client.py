@@ -293,6 +293,22 @@ class ApiClient:
         self.current_user = player
         return LoginResult(True, "Login successful.", user=player)
 
+    def _next_free_player_id(self):
+        """Find the next unused player_id of the form pNNN.
+
+        Using len(players_by_id) + 1 is unsafe because the dataset can have
+        gaps (e.g. p001, p003, p050). If the generated id already exists,
+        HashTable.insert silently overwrites the old entry, so a newly
+        created account can wipe out a player that came from the CSV.
+        Linear-scan from 1 until we find a free slot.
+        """
+        i = 1
+        while True:
+            candidate = "p" + str(i).zfill(3)
+            if not self.players_by_id.contains(candidate):
+                return candidate
+            i += 1
+
     def create_account(self, username, password):
         username = str(username).strip().lower()
         password = str(password).strip()
@@ -305,7 +321,7 @@ class ApiClient:
             self.current_user = existing
             return LoginResult(True, "Account already exists. Logged in.", user=existing)
 
-        player_id = "p" + str(len(self.players_by_id) + 1).zfill(3)
+        player_id = self._next_free_player_id()
         player = ClientPlayer(player_id, username, username.title())
         self._add_player(player)
         self.current_user = player
