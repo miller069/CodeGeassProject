@@ -11,15 +11,44 @@ class AccountService:
     def add_player(self, player):
         if not player.is_valid():
             return False
+
+        username = str(player.get_username()).strip().lower()
+
         self.__players_by_id.insert(player.get_player_id(), player)
-        self.__players_by_username.insert(player.get_username(), player)
+        self.__players_by_username.insert(username, player)
+
         return True
 
+
+    # NEW: allows new users to create accounts dynamically
+    def create_account(self, player):
+
+        if not player.is_valid():
+            return False
+
+        username = str(player.get_username()).strip().lower()
+
+        # check if username already exists
+        if self.__players_by_username.get(username) is not None:
+            return False
+
+        # insert new player into both hash tables
+        self.__players_by_id.insert(player.get_player_id(), player)
+        self.__players_by_username.insert(username, player)
+
+        return True
+
+
     def login(self, username):
-        return self.__players_by_username.get(str(username).strip().lower())
+
+        username = str(username).strip().lower()
+
+        return self.__players_by_username.get(username)
+
 
     def get_player(self, player_id):
         return self.__players_by_id.get(player_id)
+
 
     def all_players(self):
         for _, player in self.__players_by_id.items():
