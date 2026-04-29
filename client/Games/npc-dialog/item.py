@@ -175,7 +175,7 @@ def create_example_items():
         name="Shovel",
         item_type="tool",
         description="Useful for digging or clearing debris.",
-        image_path="../../graphics/items/shovel.png",
+        image_path="graphics/items/shovel.png",
         value=20
     ))
 
@@ -183,7 +183,7 @@ def create_example_items():
         name="Torch",
         item_type="tool",
         description="Provides light in dark places.",
-        image_path="../../graphics/items/torch.png",
+        image_path="graphics/items/torch.png",
         value=10
     ))
 
@@ -191,7 +191,7 @@ def create_example_items():
     items.append(Weapon(
         name="Steel Sword",
         description="A standard steel blade.",
-        image_path="../../graphics/items/sword.png",
+        image_path="graphics/items/sword.png",
         attack_bonus=15,
         value=200
     ))
@@ -199,7 +199,7 @@ def create_example_items():
     items.append(Weapon(
         name="Rope",
         description="Old and worn, but still usable.",
-        image_path="../../graphics/items/rope.png",
+        image_path="graphics/items/rope.png",
         attack_bonus=8,
         value=50
     ))
@@ -207,7 +207,7 @@ def create_example_items():
     items.append(Weapon(
         name="Crossbow",
         description="A sturdy wooden stick. Simple but effective.",
-        image_path="../../graphics/items/crossbow.png",
+        image_path="graphics/items/crossbow.png",
         attack_bonus=10,
         value=40
     ))
@@ -216,7 +216,7 @@ def create_example_items():
     items.append(Consumable(
         name="Bandage",
         description="Stops bleeding and heals a little.",
-        image_path="../../graphics/items/bandage.png",
+        image_path="graphics/items/bandage.png",
         effect_type="heal",
         effect_amount=20,
         value=15,
@@ -226,7 +226,7 @@ def create_example_items():
     items.append(Consumable(
         name="Medkit",
         description="Restores a lot of health.",
-        image_path="../../graphics/items/medkit.png",
+        image_path="graphics/items/medkit.png",
         effect_type="heal",
         effect_amount=60,
         value=50,
@@ -236,7 +236,7 @@ def create_example_items():
     items.append(Consumable(
         name="Energy Drink",
         description="Temporary boost to movement speed.",
-        image_path="../../graphics/items/energydrink.png",
+        image_path="graphics/items/energydrink.png",
         effect_type="speed",
         effect_amount=2,
         value=25,
@@ -247,7 +247,7 @@ def create_example_items():
     items.append(QuestItem(
         name="Metal Key",
         description="Opens a locked door.",
-        image_path="../../graphics/items/key.png",
+        image_path="graphics/items/key.png",
         quest_id="door_01"
     ))
 
@@ -259,12 +259,12 @@ if __name__ == "__main__":
     # Test item creation
     print("Testing Item classes...\n")
     
-    sword = Weapon("Test Sword", "A test weapon", "../../graphics/test.png", attack_bonus=5, value=50)
+    sword = Weapon("Test Sword", "A test weapon", "graphics/test.png", attack_bonus=5, value=50)
     print(f"Created: {sword}")
     print(f"Type: {sword.item_type}")
     print(f"Attack bonus: {sword.attack_bonus}\n")
     
-    potion = Consumable("Test Potion", "Heals 20 HP", "../../graphics/test.png", 
+    potion = Consumable("Test Potion", "Heals 20 HP", "graphics/test.png", 
                        effect_type="heal", effect_amount=20, value=10)
     print(f"Created: {potion}")
     print(f"Stackable: {potion.stackable}")

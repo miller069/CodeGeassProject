@@ -85,7 +85,7 @@ class Character(pygame.sprite.Sprite):
         self.animations = SpriteLoader.load_character_sprites(self.character_name)
         
         # Debug: Print sprite loading info
-        sprite_info = SpriteLoader.get_sprite_info(self.character_name, "../../graphics/characters")
+        sprite_info = SpriteLoader.get_sprite_info(self.character_name, "graphics/characters")
         print(f"Loaded {sprite_info['type']} sprites for {self.character_name}: {sprite_info}")
         
         # Ensure we have all required animations, add idle versions
@@ -318,4 +318,4 @@ class Character(pygame.sprite.Sprite):
     
     @staticmethod
     def get_preview_image():
-        return '../../graphics/test/player.png'
+        return 'graphics/test/player.png'

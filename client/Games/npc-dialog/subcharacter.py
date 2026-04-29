@@ -19,7 +19,7 @@ class Character1(Character):
         self.speed = 8
 
         try:
-            self.image = pygame.image.load('../../graphics/characters/scavenger.png').convert_alpha()
+            self.image = pygame.image.load('graphics/characters/scavenger.png').convert_alpha()
             self.image = pygame.transform.scale(self.image, (64, 64))
             self.rect = self.image.get_rect(topleft=pos)
             self.hitbox = self.rect.inflate(0, -26)
@@ -44,7 +44,7 @@ class Character1(Character):
 
     @staticmethod
     def get_preview_image():
-        return '../../graphics/characters/scavenger.png'
+        return 'graphics/characters/scavenger.png'
 
 
 class Character2(Character):
@@ -59,7 +59,7 @@ class Character2(Character):
         self.speed = 5
 
         try:
-            self.image = pygame.image.load('../../graphics/characters/soldier.png').convert_alpha()
+            self.image = pygame.image.load('graphics/characters/soldier.png').convert_alpha()
             self.image = pygame.transform.scale(self.image, (64, 64))
             self.rect = self.image.get_rect(topleft=pos)
             self.hitbox = self.rect.inflate(0, -26)
@@ -83,7 +83,7 @@ class Character2(Character):
 
     @staticmethod
     def get_preview_image():
-        return '../../graphics/characters/soldier.png'
+        return 'graphics/characters/soldier.png'
 
 
 class Character3(Character):
@@ -98,7 +98,7 @@ class Character3(Character):
         self.speed = 6
 
         try:
-            self.image = pygame.image.load('../../graphics/characters/medic.png').convert_alpha()
+            self.image = pygame.image.load('graphics/characters/medic.png').convert_alpha()
             self.image = pygame.transform.scale(self.image, (64, 64))
             self.rect = self.image.get_rect(topleft=pos)
             self.hitbox = self.rect.inflate(0, -26)
@@ -122,7 +122,7 @@ class Character3(Character):
 
     @staticmethod
     def get_preview_image():
-        return '../../graphics/characters/medic.png'
+        return 'graphics/characters/medic.png'
 
 
 class Character4(Character):
@@ -137,7 +137,7 @@ class Character4(Character):
         self.speed = 9
 
         try:
-            self.image = pygame.image.load('../../graphics/characters/hunter.png').convert_alpha()
+            self.image = pygame.image.load('graphics/characters/hunter.png').convert_alpha()
             self.image = pygame.transform.scale(self.image, (64, 64))
             self.rect = self.image.get_rect(topleft=pos)
             self.hitbox = self.rect.inflate(0, -26)
@@ -161,7 +161,7 @@ class Character4(Character):
 
     @staticmethod
     def get_preview_image():
-        return '../../graphics/characters/hunter.png'
+        return 'graphics/characters/hunter.png'
 
 
 def get_all_character_classes():

@@ -171,7 +171,7 @@ class Enemy(pygame.sprite.Sprite):
         """Load directional sprite animations using the unified sprite system."""
         from sprite_loader import SpriteLoader
         self.animations = SpriteLoader.load_enemy_sprites(self.sprite_name)
-        sprite_info = SpriteLoader.get_sprite_info(self.sprite_name, "../../graphics/enemies")
+        sprite_info = SpriteLoader.get_sprite_info(self.sprite_name, "graphics/enemies")
         print(f"  Loaded {sprite_info['type']} sprites for {self.name}: {sprite_info}")
 
     # ------------------------------------------------------------------

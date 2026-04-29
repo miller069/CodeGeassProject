@@ -289,17 +289,17 @@ if __name__ == "__main__":
     
     # Add items
     print("Adding items...")
-    sword = Weapon("Iron Sword", "A sturdy blade", "../../graphics/test.png", attack_bonus=10, value=100)
+    sword = Weapon("Iron Sword", "A sturdy blade", "graphics/test.png", attack_bonus=10, value=100)
     inventory.add_item(sword)
     
-    armor = Armor("Leather Armor", "Light protection", "../../graphics/test.png", defense_bonus=5, value=80)
+    armor = Armor("Leather Armor", "Light protection", "graphics/test.png", defense_bonus=5, value=80)
     inventory.add_item(armor)
     
-    potion1 = Consumable("Health Potion", "Heals 50 HP", "../../graphics/test.png", 
+    potion1 = Consumable("Health Potion", "Heals 50 HP", "graphics/test.png", 
                         effect_type="heal", effect_amount=50, value=25)
     inventory.add_item(potion1)
     
-    potion2 = Consumable("Health Potion", "Heals 50 HP", "../../graphics/test.png", 
+    potion2 = Consumable("Health Potion", "Heals 50 HP", "graphics/test.png", 
                         effect_type="heal", effect_amount=50, value=25)
     potion2.quantity = 3
     inventory.add_item(potion2)  # Should stack with potion1
