@@ -259,7 +259,15 @@ class ApiClient:
             rank += 1
 
         return rows
+    def get_rank_by_name(self, game_id, name):
+        name = str(name).strip().lower()
 
+        # find player_id by name
+        for player_id, player in self.players_by_id.items():
+            if player.get_display_name().lower() == name or player.get_username().lower() == name:
+                return self.leaderboards.get_rank(game_id, player_id)
+
+        return None
     def _load_sessions(self):
         path = self._data_path("sessions.csv")
         if self._csv_has_rows(path):

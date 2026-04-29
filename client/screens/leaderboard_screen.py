@@ -14,7 +14,8 @@ class LeaderboardScreen:
     def __init__(self, app):
         self.app = app
         self.back_button = Button(40, 560, 120, 42, "Back")
-
+        self.search_text = ""
+        self.search_result = ""
         self.game_buttons = ArrayList()
         x = 40
         for game in self.app.api.get_games():
@@ -29,6 +30,21 @@ class LeaderboardScreen:
         for button, game_id in self.game_buttons:
             if button.is_clicked(event):
                 self.app.selected_game_id = game_id
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                self.search_text = self.search_text[:-1]
+            elif event.key == pygame.K_RETURN:
+                rank = self.app.api.get_rank_by_name(
+                    self.app.selected_game_id,
+                    self.search_text
+                )
+                if rank is not None:
+                    self.search_result = "Rank: " + str(rank)
+                else:
+                    self.search_result = "Player not found"
+            else:
+                self.search_text += event.unicode
 
     def draw(self, surface):
         surface.fill(BACKGROUND)
@@ -45,7 +61,11 @@ class LeaderboardScreen:
         draw_text(surface, "Rank", self.app.font, BLACK, 95, 173)
         draw_text(surface, "Player", self.app.font, BLACK, 250, 173)
         draw_text(surface, "Score", self.app.font, BLACK, 590, 173)
+        draw_text(surface, "Search Player:", self.app.small_font, DARK_GRAY, 40, 140)
+        draw_text(surface, self.search_text, self.app.small_font, BLACK, 180, 140)
 
+        if self.search_result:
+            draw_text(surface, self.search_result, self.app.small_font, DARK_GRAY, 40, 165)
         y = 210
         if self.app.current_user is not None:
             rank = self.app.api.get_player_rank(

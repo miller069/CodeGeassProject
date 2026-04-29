@@ -121,7 +121,7 @@ class AVLTree:
 
     def rank_of_key_descending(self, key):
         """Returns 1-based rank for a score key, highest score rank 1."""
-        higher_count = self.__count_greater_than(self.__root, key)
+        higher_count = self.__count_greater_than(self.root, key)
         return higher_count + 1
 
     def __count_greater_than(self, node, key):

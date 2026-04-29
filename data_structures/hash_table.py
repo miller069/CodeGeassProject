@@ -21,10 +21,10 @@ class HashTable:
 
     def __hash(self, key):
         key = str(key)
-        h = 5381
+        total = 0
         for ch in key:
-            h = ((h << 5) + h) + ord(ch)
-        return h % self.__capacity
+            total += ord(ch)
+        return total % self.__capacity
 
     def __load_factor(self):
         return self.__size / self.__capacity
