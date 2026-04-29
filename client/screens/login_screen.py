@@ -5,11 +5,11 @@ from ui_helpers import BACKGROUND, BLACK, DARK_GRAY, RED, GREEN, Button, TextInp
 class LoginScreen:
     def __init__(self, app):
         self.app = app
-        self.username_input = TextInput(300, 230, 310, 44, "username, e.g. chuqi")
+        self.username_input = TextInput(300, 230, 310, 44, "username")
         self.password_input = TextInput(300, 290, 310, 44, "password", is_password=True)
         self.login_button = Button(300, 365, 145, 45, "Login")
         self.create_button = Button(465, 365, 145, 45, "Create")
-        self.message = "Use chuqi / any password for the local demo."
+        self.message = ""
         self.message_color = DARK_GRAY
 
     def handle_event(self, event):
@@ -38,7 +38,7 @@ class LoginScreen:
     def draw(self, surface):
         surface.fill(BACKGROUND)
         draw_text(surface, "The Arcade", self.app.title_font, BLACK, 330, 90)
-        draw_text(surface, "Pygame client connected to local Python service classes", self.app.small_font, DARK_GRAY, 255, 145)
+        draw_text(surface, "Sign in to play, view leaderboards, and check your match history", self.app.small_font, DARK_GRAY, 195, 145)
 
         draw_text(surface, "Username", self.app.small_font, BLACK, 300, 205)
         self.username_input.draw(surface, self.app.font)
