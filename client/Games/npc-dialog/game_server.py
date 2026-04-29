@@ -3,6 +3,7 @@
 # run this on one machine and share your IP with teammates so they can join
 # find your IP: hostname -I on linux, ipconfig on windows
 # usage: python game_server.py
+# game serverrrr
 
 import socket
 import threading
