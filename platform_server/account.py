@@ -1,3 +1,8 @@
+
+
+
+
+
 from data_structures.hash_table import HashTable
 
 
@@ -20,7 +25,7 @@ class AccountService:
         return True
 
 
-    # NEW: allows new users to create accounts dynamically
+    
     def create_account(self, player):
 
         if not player.is_valid():
