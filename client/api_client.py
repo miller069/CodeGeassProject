@@ -15,8 +15,8 @@ if PROJECT_ROOT not in sys.path:
 
 from data_structures.array_list import ArrayList
 from data_structures.hash_table import HashTable
-from platform_server.account_service import AccountService
-from platform_server.leaderboard_service import LeaderboardService
+from platform_server.account import AccountService
+from platform_server.leaderboard import LeaderboardService
 
 
 class GameEntry:
