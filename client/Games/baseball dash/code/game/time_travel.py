@@ -104,24 +104,25 @@ class TimeTravel:
             self.history.push(state)
 
             
-        if self.history.size() > self.max_history:
-            temp = Stack()
+            if self.history.size() > self.max_history:
+                temp = Stack()
 
-        while not self.history.is_empty():
-            temp.push(self.history.pop())
+                # Move everything to temp
+                while not self.history.is_empty():
+                    temp.push(self.history.pop())
+
+                # Remove the oldest (bottom of original stack)
+                temp.pop()
+
+                # Move back to history
+                while not temp.is_empty():
+                    self.history.push(temp.pop())
 
                 
-            temp.pop()
+                self.future.clear()
 
                 
-        while not temp.is_empty():
-            self.history.push(temp.pop())
-
-            
-            self.future.clear()
-
-            
-            self.frames_since_last_record = 0
+                self.frames_since_last_record = 0
 
         
         self.frame_counter += 1
