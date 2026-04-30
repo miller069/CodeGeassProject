@@ -48,7 +48,7 @@ class NPC(pygame.sprite.Sprite):
     def _load_image(self, sprite_name):
         base = os.path.join(
             os.path.dirname(__file__),
-            '..', '..', 'graphics', 'npcs', sprite_name
+             'graphics', 'npcs', sprite_name
         )
         for candidate in ['idle.png', 'npc.png']:
             path = os.path.join(base, candidate)
