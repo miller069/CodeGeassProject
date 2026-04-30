@@ -22,6 +22,7 @@ class MatchHistoryScreen:
         draw_text(surface, "Match History", self.app.title_font, BLACK, 40, 35)
 
         player_id = self.app.current_user.get_player_id()
+        self.app.api.reload_sessions()
         rows = self.app.api.get_match_history(player_id)
         draw_text(surface, "Player ID: " + player_id, self.app.small_font, DARK_GRAY, 45, 90)
 

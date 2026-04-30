@@ -220,7 +220,43 @@ class ApiClient:
         if player.is_valid():
             self.accounts.add_player(player)
             self.players_by_id.insert(player.get_player_id(), player)
+    #records a session both in memory and in the sessions.csv file, then updates the leaderboards      
+    def record_session(self, player_id, game_id, score, outcome="played"):
+        import time
 
+        path = self._data_path("sessions.csv")
+        file_exists = os.path.exists(path)
+        timestamp = str(int(time.time()))
+        session_id = "s" + timestamp
+
+        session = ClientSession(
+            session_id,
+            player_id,
+            game_id,
+            int(score),
+            timestamp,
+            timestamp,
+            outcome
+        )
+
+        self._add_session(session)
+
+        with open(path, "a", encoding="utf-8") as file:
+            if not file_exists or os.path.getsize(path) == 0:
+                file.write("session_id,player_id,game_id,score,start_time,end_time,outcome\n")
+
+            file.write(
+                session_id + "," +
+                player_id + "," +
+                game_id + "," +
+                str(int(score)) + "," +
+                timestamp + "," +
+                timestamp + "," +
+                outcome + "\n"
+            )
+
+        return session
+    
     def _add_session(self, session):
         if session.is_valid():
             self.sessions.append(session)
@@ -495,7 +531,33 @@ class ApiClient:
     # -------------------------
     # Profile and history methods
     # -------------------------
+    def save_session(self, player_id, game_id, score, outcome):
+        path = self._data_path("sessions.csv")
 
+        file_exists = os.path.exists(path)
+
+        import time
+        timestamp = str(int(time.time()))
+
+        session_id = "s" + timestamp
+
+        with open(path, "a", encoding="utf-8") as file:
+            if not file_exists or os.path.getsize(path) == 0:
+                file.write("session_id,player_id,game_id,score,start_time,end_time,outcome\n")
+
+            file.write(
+                session_id + "," +
+                player_id + "," +
+                game_id + "," +
+                str(score) + "," +
+                timestamp + "," +
+                timestamp + "," +
+                outcome + "\n"
+            )
+
+        # reload sessions so UI updates immediately
+        self.reload_sessions()
+        
     def get_profile(self, player_id):
         player = self.players_by_id.get(player_id)
 

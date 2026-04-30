@@ -4,12 +4,29 @@ main.py - Complete game with character selection and networking
 Integrated version combining lab-03 and project-01
 """
 
+from xmlrpc import client
+
 import pygame
 import sys
 import argparse
 from settings import *
 from level import Level
 from subcharacter import get_all_character_classes
+import os
+import sys
+
+ARCADE_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "..")
+)
+
+if ARCADE_ROOT not in sys.path:
+    sys.path.insert(0, ARCADE_ROOT)
+
+try:
+    from client.api_client import ApiClient
+except Exception as e:
+    print("Could not import ApiClient:", e)
+    ApiClient = None
 
 class Button:
     def __init__(self, x, y, width, height, fg, bg, content, fontsize):
@@ -164,6 +181,9 @@ class Game:
         self.level = None
         self.running = True
 
+        self.api = ApiClient() if ApiClient else None
+        self.match_saved = False
+
     def character_select(self):
         """Character selection screen"""
         char_select = True
@@ -261,7 +281,42 @@ class Game:
             
             self.clock.tick(FPS)
             pygame.display.update()
-    
+    def save_match_history(self):
+        print("SAVE MATCH HISTORY WAS CALLED")
+
+        if self.match_saved:
+            return
+
+        if self.api is None:
+            print("Match history not saved: ApiClient unavailable.")
+            return
+
+        if self.level is None:
+            print("Match history not saved: level is None.")
+            return
+        if self.match_saved:
+            return
+
+        if self.api is None:
+            print("Match history not saved: ApiClient unavailable.")
+            return
+
+        if self.level is None:
+            return
+
+        player_id = self.player_name
+
+        if self.api.current_user is not None:
+            player_id = self.api.current_user.get_player_id()
+
+        score = self.level.baseball_count
+        outcome = "played"
+
+        self.api.record_session(player_id, "baseball", score, outcome)
+        self.match_saved = True
+
+        print(f"Saved match history: player={player_id}, score={score}, outcome={outcome}")
+
     def run(self):
         """Main game loop"""
         # Character selection
@@ -285,11 +340,13 @@ class Game:
             for event in pygame.event.get():
                 events.append(event)
                 if event.type == pygame.QUIT:
+                    self.save_match_history()
                     self.level.network.disconnect()
                     pygame.quit()
                     sys.exit()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
+                        self.save_match_history()
                         self.level.network.disconnect()
                         pygame.quit()
                         sys.exit()
