@@ -1,14 +1,14 @@
 """
 dialog_data.py - NPC dialog tree definitions
-
-Author: Chqui Zhang
-Date:   2025-04-28
+ 
+Author: Chuqi Zhang
+Date:   2026-04-28
 Lab:    Lab 7 - NPC Dialog with Graphs
-
+ 
 TODO (Part 2)
 -------------
 Define at least THREE NPCs below, each with a meaningful dialog tree.
-
+ 
 Requirements for full credit:
   * At least 3 distinct NPCs (different names, positions, sprites).
   * Each NPC must have at least 4 dialog nodes.
@@ -17,42 +17,46 @@ Requirements for full credit:
   * At least one NPC must have a LOOP (an edge that leads back to an
     earlier node, e.g. a merchant menu the player can revisit).
   * At least one NPC must use an AI node connected to Gemini (Part 4).
-
+ 
 TODO (Part 4)
 -------------
   * Create an AIHandler with a custom personality string.
   * Set at least one dialog node's type to "ai".
   * Add the handler to the matching entry in NPC_DATA.
   * Make sure your GEMINI_API_KEY is set (see ai_npc.py).
-
+ 
 NPC_DATA format
 ---------------
 Each entry is a dict with these keys:
-
+ 
     "name"       : str  — displayed in the dialog box header
     "grid_x"     : int  — tile column on the map
     "grid_y"     : int  — tile row on the map
     "sprite_name": str  — subfolder name under graphics/npcs/
     "dialog"     : DialogGraph instance (built by a helper function below)
     "ai_handler" : AIHandler | None  — set to an AIHandler for AI nodes
-
+ 
 Adjust grid_x / grid_y so each NPC stands in a walkable area of YOUR map.
 """
-
+ 
 from dialog_graph import DialogGraph
-
-from ai_npc import AIHandler
-
-
+ 
+try:
+    from ai_npc import AIHandler
+    _AI_AVAILABLE = True
+except Exception:
+    _AI_AVAILABLE = False
+ 
+ 
 # ---------------------------------------------------------------------------
-# Example NPC 1 — Town Elder
+# Example NPC 1 — Elder Bram
 # ---------------------------------------------------------------------------
 # Demonstrates: branching tree, loop back, end node.
 # Keep, replace, or extend this as one of your three NPCs.
-
+ 
 def _make_town_elder():
-    dg = DialogGraph("Town Elder")
-
+    dg = DialogGraph("Elder Bram")
+ 
     dg.add_dialog_node(
         "greet",
         "Ah, a new face! Welcome to the village. What brings you to my door?"
@@ -78,7 +82,7 @@ def _make_town_elder():
         "the offer stands."
     )
     dg.add_dialog_node("farewell", "Safe travels, adventurer.", node_type="end")
-
+ 
     # Branching from greet
     dg.add_choice("greet",   "quest",    "Tell me about the quest.")
     dg.add_choice("greet",   "lore",     "What can you tell me about this place?")
@@ -92,19 +96,19 @@ def _make_town_elder():
     # End branches
     dg.add_choice("accept",  "farewell", "Farewell.")
     dg.add_choice("decline", "farewell", "Farewell.")
-
+ 
     dg.set_start("greet")
     return dg
-
-
+ 
+ 
 # ---------------------------------------------------------------------------
 # TODO: Add your own NPCs below.
 # Replace these stubs with your implementations.
 # ---------------------------------------------------------------------------
-
+ 
 def _make_merchant():
-    dg = DialogGraph("Merchant")
-
+    dg = DialogGraph("Tom")
+ 
     dg.add_dialog_node("menu", "Welcome to my shop! What can I get you?")
     dg.add_dialog_node(
         "potions",
@@ -116,29 +120,30 @@ def _make_merchant():
     )
     dg.add_dialog_node(
         "buy_potion",
-        "Excellent choice! Here is your healing potion. Stay saft out there."
+        "Excellent choice! Here is your healing potion. Stay safe out there."
     )
     dg.add_dialog_node("bye", "Come back anytime, friend!", node_type="end")
-
-    dg.add_choice("menu", "potions", "Show me your potions.")
-    dg.add_choice("menu", "weapons", "What weapons do you have?")
-    dg.add_choice("menu", "bye", "Just browsing. Goodbye.")
-    dg.add_choice("potions", "buy_potion", "I'll  take a healing potion.")
-    dg.add_choice("potions", "menu", "Let me see something else.")
-    dg.add_choice("weapons", "menu", "Let me see something else.")
-    dg.add_choice("weapons", "bye", "Too expensive. Goodbye.")
-    dg.add_choice("buy_potion", "menu", "I want to buy more.")
-    dg.add_choice("buy_potion", "bye", "That's all. Thanks!")
-
+ 
+    dg.add_choice("menu",       "potions",    "Show me your potions.")
+    dg.add_choice("menu",       "weapons",    "What weapons do you have?")
+    dg.add_choice("menu",       "bye",        "Just browsing. Goodbye.")
+    dg.add_choice("potions",    "buy_potion", "I'll take a healing potion.")
+    dg.add_choice("potions",    "menu",       "Let me see something else.")
+    dg.add_choice("weapons",    "menu",       "Let me see something else.")
+    dg.add_choice("weapons",    "bye",        "Too expensive. Goodbye.")
+    dg.add_choice("buy_potion", "menu",       "I want to buy more.")
+    dg.add_choice("buy_potion", "bye",        "That's all. Thanks!")
+ 
     dg.set_start("menu")
     return dg
-
-
+ 
+ 
 def _make_sage():
-    dg = DialogGraph("Elara the Sage")
+    dg = DialogGraph("Lena")
+ 
     dg.add_dialog_node(
         "intro",
-        "The stars whisper of your arrival, traveler. I am Elara, keeper of "
+        "The stars whisper of your arrival, traveler. I am Lena, keeper of "
         "ancient knowledge. What wisdom do you seek?"
     )
     dg.add_dialog_node(
@@ -148,7 +153,7 @@ def _make_sage():
     )
     dg.add_dialog_node(
         "wisdom",
-        "Elara closes her eyes and channels the ancient knowledge...",
+        "Lena closes her eyes and channels the ancient knowledge...",
         node_type="ai"
     )
     dg.add_dialog_node(
@@ -156,20 +161,20 @@ def _make_sage():
         "May the starlight guide your path, young one.",
         node_type="end"
     )
-    
-    dg.add_choice("intro", "history", "Tell me about the history of this land.")
-    dg.add_choice("intro", "wisdom", "Share your wisdom with me.")
-    dg.add_choice("intro", "farewell", "I must go. Farewell.")
-    dg.add_choice("history", "intro", "I have another question.")
-    dg.add_choice("history", "wisdom", "What else can you see?")
-    dg.add_choice("history", "farewell", "Thank you, sage.")
-    dg.add_choice("wisdom", "intro", "Tell me more.")
-    dg.add_choice("wisdom", "farewell", "Thank you, Elara.")
-
+ 
+    dg.add_choice("intro",   "history",  "Tell me about the history of this land.")
+    dg.add_choice("intro",   "wisdom",   "Share your wisdom with me.")
+    dg.add_choice("intro",   "farewell", "I must go. Farewell.")
+    dg.add_choice("history", "intro",    "I have another question.")
+    dg.add_choice("history", "wisdom",   "What else can you see?")
+    dg.add_choice("history", "farewell", "Thank you.")
+    dg.add_choice("wisdom",  "intro",    "Tell me more.")
+    dg.add_choice("wisdom",  "farewell", "Thank you, Lena.")
+ 
     dg.set_start("intro")
     return dg
-
-
+ 
+ 
 # ---------------------------------------------------------------------------
 # AI handlers for Part 4
 # ---------------------------------------------------------------------------
@@ -182,32 +187,31 @@ def _make_sage():
 #           "Speak formally. Keep replies under 3 sentences."
 #       )
 #   )
-
-sage_ai = AIHandler(
-    personality = (
-        "You are Elara, an ancient sage in a fantasy RPG. "
+ 
+lena_ai = AIHandler(
+    personality=(
+        "You are Lena, an ancient sage in a fantasy RPG. "
         "You speak in riddles and old-world prose. "
         "You possess deep knowledge of magic, history, and prophecy. "
         "Keep responses under three sentences."
     )
-)
-
+) if _AI_AVAILABLE else None
+ 
 # ---------------------------------------------------------------------------
 # NPC_DATA — the game spawns every entry in this list
 # ---------------------------------------------------------------------------
-
+ 
 NPC_DATA = [
     {
-        "name":        "Town Elder",
+        "name":        "Elder Bram",
         "grid_x":      10,
         "grid_y":       5,
         "sprite_name": "town_elder",
         "dialog":      _make_town_elder(),
-        "ai_handler":  None,            # TODO (Part 4): replace with AIHandler
+        "ai_handler":  None,
     },
-    # TODO: Add at least two more NPCs:
     {
-        "name":        "Merchant",
+        "name":        "Tom",
         "grid_x":      20,
         "grid_y":       8,
         "sprite_name": "merchant",
@@ -215,11 +219,12 @@ NPC_DATA = [
         "ai_handler":  None,
     },
     {
-        "name":        "Elara the Sage",
+        "name":        "Lena",
         "grid_x":      25,
         "grid_y":      14,
         "sprite_name": "sage",
         "dialog":      _make_sage(),
-        "ai_handler":  sage_ai,       # AIHandler instance from Part 4
+        "ai_handler":  lena_ai,
     },
 ]
+
