@@ -1,0 +1,171 @@
+/*
+circular_buffer.h - Circular buffer (ring buffer) template class
+
+A fixed-size buffer that wraps around when full.
+Used as the base for position smoothing strategies.
+
+Author: Nicholas Waller
+Date: 2-23-26
+Project: Project 2 - Network Position Buffering
+*/
+
+#ifndef CIRCULAR_BUFFER_H
+#define CIRCULAR_BUFFER_H
+
+#include <stdexcept>
+
+template<typename T>
+class CircularBuffer {
+protected:
+    T* buffer;           // Array to store elements
+    int capacity;        // Maximum number of elements
+    int head;            // Index for next dequeue
+    int tail;            // Index for next enqueue
+    int count;           // Current number of elements
+    
+public:
+    /**
+     * Constructor - creates empty circular buffer
+     * 
+     * @param cap Maximum capacity of the buffer
+     */
+    CircularBuffer(int cap) {
+        // TODO: Initialize capacity
+        // TODO: Allocate array of size capacity
+        // TODO: Initialize head = 0, tail = 0, count = 0
+        capacity = cap;
+        head = 0;
+        tail = 0;
+        count = 0;
+        buffer = new T[capacity]{};
+    }
+    
+    /**
+     * Destructor - clean up allocated memory
+     */
+    virtual ~CircularBuffer() {
+        delete[] buffer;
+    }
+    
+    /**
+     * Add element to the buffer
+     * 
+     * @param item Element to add
+     * @return true if successful, false if buffer is full
+     */
+    bool enqueue(const T& item) {
+        if (is_full()) {
+            return false; 
+        }
+        buffer[tail] = item;
+        tail = (tail + 1) % capacity;
+        count++;
+        return true;
+    }
+    
+    /**
+     * Remove and return element from buffer
+     * 
+     * @return The oldest element in the buffer
+     * @throws std::runtime_error if buffer is empty
+     */
+    T dequeue() {
+        if (is_empty()) {
+            throw std::runtime_error("Buffer is empty");
+        }
+        T item = buffer[head];
+        head = (head + 1) % capacity;
+        count--;
+        return item;
+    }
+    
+    /**
+     * Get element at logical index (0 = oldest, size()-1 = newest)
+     * 
+     * @param index Logical index (0-based from head)
+     * @return Element at that position
+     * @throws std::out_of_range if index is invalid
+     */
+    T get(int index) const {
+        if (index < 0 || index >= count) {
+            throw std::out_of_range("Index out of range");
+        }
+        int actual_index = (head + index) % capacity;
+        return buffer[actual_index];
+    }
+    
+    /**
+     * Look at the oldest element without removing it
+     * 
+     * @return The oldest element
+     * @throws std::runtime_error if buffer is empty
+     */
+    T peek() const {
+        if (is_empty()) {
+            throw std::runtime_error("Buffer is empty");
+        }
+        return buffer[head];
+    }
+    
+    /**
+     * Check if buffer is empty
+     * 
+     * @return true if no elements in buffer
+     */
+    bool is_empty() const {
+        if (count == 0) {
+            return true;
+        }
+            return false;
+        
+    }
+    
+    /**
+     * Check if buffer is full
+     * 
+     * @return true if buffer is at capacity
+     */
+    bool is_full() const {
+        if (count == capacity) {
+            return true;
+        } 
+        else {
+        return false;
+    }
+    }
+    
+    /**
+     * Get current number of elements
+     * 
+     * @return Number of elements currently in buffer
+     */
+    int size() const {
+        return count;
+    }
+    
+    /**
+     * Get maximum capacity
+     * 
+     * @return Maximum number of elements buffer can hold
+     */
+    int get_capacity() const {
+        return capacity;
+    }
+    
+    /**
+     * Remove all elements from buffer
+     */
+    void clear() {
+        for (int i = 0; i < capacity; i++) {
+            buffer[i] = {};
+            head = 0;
+            tail = 0;
+            count = 0;
+        }
+
+    }
+
+};
+
+
+#endif // CIRCULAR_BUFFER_H

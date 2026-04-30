@@ -1,0 +1,86 @@
+name: GitHub Classroom Autograding
+
+on: [push]
+
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+
+    steps:
+      - name: Checkout student code
+        uses: actions/checkout@v4
+        with:
+          path: student
+
+      - name: Checkout grading tests
+        uses: actions/checkout@v4
+        with:
+          repository: ece-3822/lab07-grading-tests
+          token: ${{ secrets.GRADING_TOKEN }}
+          path: grading
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install pytest pygame
+
+      # -----------------------------------------------------------------------
+      # Part 1 — Graph: add_node, add_edge, has_node, has_edge,
+      #                  get_neighbors, get_node_data, len  (6 pts)
+      # -----------------------------------------------------------------------
+      - name: "Graph Basic (6 pts)"
+        id: graph_basic
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Graph Basic
+          setup-command: ""
+          command: python -m pytest grading/grading_tests.py::TestGraphBasic -v --tb=short
+          timeout: 60
+          max-score: 6
+
+      # -----------------------------------------------------------------------
+      # Part 1 — Graph: bfs, dfs  (8 pts)
+      # -----------------------------------------------------------------------
+      - name: "Graph Traversal — BFS / DFS (8 pts)"
+        id: graph_traversal
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Graph Traversal
+          setup-command: ""
+          command: python -m pytest grading/grading_tests.py::TestGraphTraversal -v --tb=short
+          timeout: 60
+          max-score: 8
+
+      # -----------------------------------------------------------------------
+      # Part 1 — Graph: shortest_path  (6 pts)
+      # -----------------------------------------------------------------------
+      - name: "Graph Shortest Path (6 pts)"
+        id: graph_shortest
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Graph Shortest Path
+          setup-command: ""
+          command: python -m pytest grading/grading_tests.py::TestShortestPath -v --tb=short
+          timeout: 60
+          max-score: 6
+
+      # -----------------------------------------------------------------------
+      # Report results to GitHub Classroom
+      # -----------------------------------------------------------------------
+      - name: Autograding Reporter
+        uses: education/autograding-grading-reporter@v1
+        env:
+          GRAPH_BASIC_RESULTS:    "${{ steps.graph_basic.outputs.result }}"
+          GRAPH_TRAVERSAL_RESULTS: "${{ steps.graph_traversal.outputs.result }}"
+          GRAPH_SHORTEST_RESULTS: "${{ steps.graph_shortest.outputs.result }}"
+        with:
+          runners: graph_basic,graph_traversal,graph_shortest
