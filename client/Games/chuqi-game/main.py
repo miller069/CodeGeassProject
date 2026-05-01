@@ -6,7 +6,10 @@ Integrated version combining lab-03 and project-01
 
 import pygame
 import sys
+import os
+import time
 import argparse
+from datetime import datetime
 from settings import *
 from level import Level
 from subcharacter import get_all_character_classes
@@ -163,6 +166,7 @@ class Game:
         self.selected_character = None
         self.level = None
         self.running = True
+        self.session_start_time = None   # set when level is created
 
     def character_select(self):
         """Character selection screen"""
@@ -266,10 +270,10 @@ class Game:
         """Main game loop"""
         # Character selection
         self.character_select()
-        
+
         if not self.running or self.selected_character is None:
             return
-        
+
         # Create level with selected character
         self.level = Level(
             self.player_name, 
@@ -278,26 +282,79 @@ class Game:
             self.server_port, 
             self.serializer
         )
-        
-        # Game loop
-        while self.running:
-            events = []
-            for event in pygame.event.get():
-                events.append(event)
-                if event.type == pygame.QUIT:
-                    self.level.network.disconnect()
-                    pygame.quit()
-                    sys.exit()
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        self.level.network.disconnect()
-                        pygame.quit()
-                        sys.exit()
+        self.session_start_time = time.time()
 
-            self.screen.fill('black')
-            self.level.run(events)
-            pygame.display.update()
-            self.clock.tick(FPS)
+        # Game loop — wrapped in try/finally so we always log the session,
+        # even if an exception bubbles up or the player closes the window.
+        try:
+            while self.running:
+                events = []
+                for event in pygame.event.get():
+                    events.append(event)
+                    if event.type == pygame.QUIT:
+                        self.running = False
+                    elif event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            self.running = False
+
+                self.screen.fill('black')
+                self.level.run(events)
+                pygame.display.update()
+                self.clock.tick(FPS)
+        finally:
+            self._log_session()
+            try:
+                self.level.network.disconnect()
+            except Exception:
+                pass
+            pygame.quit()
+
+    # ------------------------------------------------------------------
+    # Session logging — appends a row to <project_root>/data/sessions.csv
+    # ------------------------------------------------------------------
+
+    def _find_sessions_csv(self):
+        """Walk up from this file looking for a sibling data/ directory."""
+        candidate = os.path.dirname(os.path.abspath(__file__))
+        for _ in range(6):
+            candidate = os.path.dirname(candidate)
+            if os.path.isdir(os.path.join(candidate, 'data')):
+                return os.path.join(candidate, 'data', 'sessions.csv')
+        return None
+
+    def _log_session(self):
+        """Append one row to data/sessions.csv summarizing this play session.
+
+        score   = player.exp at exit
+        outcome = 'complete' (no win/loss judgement yet)
+        """
+        if self.level is None or self.session_start_time is None:
+            return
+
+        sessions_path = self._find_sessions_csv()
+        if sessions_path is None:
+            print("[Session] data/ directory not found; session not logged.")
+            return
+
+        end_time   = time.time()
+        start_iso  = datetime.fromtimestamp(self.session_start_time).strftime("%Y-%m-%dT%H:%M:%S")
+        end_iso    = datetime.fromtimestamp(end_time).strftime("%Y-%m-%dT%H:%M:%S")
+        session_id = "s" + str(int(end_time))
+        score      = int(getattr(self.level.player, 'exp', 0))
+        outcome    = "complete"
+
+        header = "session_id,player_id,game_id,score,start_time,end_time,outcome\n"
+        row    = f"{session_id},{self.player_name},chuqi_game,{score},{start_iso},{end_iso},{outcome}\n"
+
+        try:
+            need_header = (not os.path.exists(sessions_path)) or os.path.getsize(sessions_path) == 0
+            with open(sessions_path, 'a', encoding='utf-8') as f:
+                if need_header:
+                    f.write(header)
+                f.write(row)
+            print(f"[Session] Logged: {session_id} player={self.player_name} score={score} outcome={outcome}")
+        except Exception as exc:
+            print(f"[Session] Failed to write session: {exc}")
 
 
 if __name__ == '__main__':
