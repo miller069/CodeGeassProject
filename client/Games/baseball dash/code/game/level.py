@@ -190,12 +190,8 @@ class Level:
             print(f"[Map] Loaded {len(gid_map)} GID surfaces from Map.tmx")
 
         LAYERS = [
-            ('map/map_FloorBlocks.csv', 'boundary',
-             [self.visible_sprites, self.obstacle_sprites]),
             ('map/map_Grass.csv',       'grass',
              [self.visible_sprites]),
-            ('map/map_Objects.csv',     'object',
-             [self.visible_sprites, self.obstacle_sprites]),
         ]
 
         floor_blocks_loaded = False
@@ -212,12 +208,7 @@ class Level:
                     surf = gid_map.get(tile_id)
 
                     if surf is None and sprite_type == "object":
-                        try:
-                            surf = pygame.image.load("../../graphics/test/rock.png").convert_alpha()
-                            surf = pygame.transform.scale(surf, (TILESIZE, TILESIZE))
-                        except Exception as e:
-                            print("Could not load rock image:", e)
-                            surf = None
+                        continue
 
                     if surf is not None:
                         Tile((x, y), groups, sprite_type, surf)

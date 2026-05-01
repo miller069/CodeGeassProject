@@ -78,113 +78,212 @@ class Pitcher(Character):
     @staticmethod
     def get_preview_image():
   
-        return "../graphics/game characters/pitcher.png"
+        return '../../graphics/characters/pitcher.png'
 
 
-class Catcher(Character):
-    def __init__(self, character_name, ops, average, slugging):
-        #super().__init__(pos, groups, obstacle_sprites)
+class Slugger(Character):
+    """
+    TODO: Implement class
+    
+    """
+    def __init__(self, pos, groups, obstacle_sprites, character_name="Slugger", avg_modifier=40, slg_modifier=50, is_local=False):
+        super().__init__(pos, groups, obstacle_sprites)
+        
+        # TODO: Set character image
+        self.image = pygame.image.load('../../graphics/characters/slugger.png').convert_alpha()
+        # scale to match other sprites (64x64 is typical)
+        self.image = pygame.transform.scale(self.image, (64, 64))
+        self.rect = self.image.get_rect(topleft=pos)
+        self.hitbox = self.rect.inflate(0, -26)
+        
+        # TODO: Set stats
+        self.character_name = character_name
+        self.__avg_modifier = avg_modifier  
+        self.__slg_modifier = slg_modifier
+        self.is_local = is_local
+        self.status = "idle"
 
-        #self.image = pygame.image.load('../graphics/test/fielder.png').convert_alpha()
-        #self.rect = self.image.get_rect(topleft=pos)
-        #self.hitbox = self.rect.inflate(0, -26)
+        self.inventory = Inventory()
 
-        self._character_name = character_name # I dont want player changing the athlets names
-        self.__ops = ops
-        self.__average = average
-        self.__slugging = slugging
+    def reduce_stamina(self, damage):
+        self.damage = damage
+        self.__stamina -= damage
 
-    def special_ability(self, steady_hand): #boost pitchers stats temporarily
-        self.avg_modifier += steady_hand 
-        self.slg_modifier += steady_hand
-        return  steady_hand
+        if self.__stamina < 0:
+            self.__stamina = 0
+        return damage
+    
+    def is_alive(self):
+        if self.__stamina <= 0:
+            return False
+        if self.stamina > 0:
+            return True
 
+    def heal(self, amount):
+        if self.stamina + amount > 100:
+            self.stamina = 100
+        else:
+            self.stamina += amount
+
+        return amount
+
+    def add_item(self, item):
+        self.items.append(item)
+        return 
+    def special_ability(self, hot_streak): #boost pitchers stats temporarily
+        # TODO: Implement special ability
+        self.avg_modifier += hot_streak 
+        self.slg_modifier += hot_streak
+        return 
+    
+    # ### TODO: Uncomment and implement these
     @staticmethod
     def get_display_name():
-        return "Catcher"
-
+        return "Slugger"
+    
     @staticmethod
     def get_description():
-        return "Commands the defense and provides power at the plate"
-    
+         return "A powerful slugger with exceptional home run potential"
     @staticmethod
     def get_preview_image():
   
-        return "../graphics/game characters/hitter.png"
+        return "../../graphics/characters/slugger.png"
 
 class Coach(Character):
-    def __init__(self, character_name, ops_plus, average_plus, slugging_plus):
-        #super().__init__(pos, groups, obstacle_sprites)
+    """
+    TODO: Implement class
+    
+    """
+    def __init__(self, pos, groups, obstacle_sprites, character_name="Coach", avg_modifier=40, slg_modifier=50, is_local=False):
+        super().__init__(pos, groups, obstacle_sprites)
         
         # TODO: Set character image
-        #self.image = pygame.image.load('../graphics/test/coach.png').convert_alpha()
-        #self.rect = self.image.get_rect(topleft=pos)
-        #self.hitbox = self.rect.inflate(0, -26)
+        self.image = pygame.image.load('../../graphics/characters/coach.png').convert_alpha()
+        # scale to match other sprites (64x64 is typical)
+        self.image = pygame.transform.scale(self.image, (64, 64))
+        self.rect = self.image.get_rect(topleft=pos)
+        self.hitbox = self.rect.inflate(0, -26)
         
         # TODO: Set stats
-        self._character_name = character_name
-        self.__ops_plus = ops_plus
-        self.__average_plus = average_plus
-        self.__slugging_plus = slugging_plus
+        self.character_name = character_name
+        self.__avg_modifier = avg_modifier  
+        self.__slg_modifier = slg_modifier
+        self.is_local = is_local
+        self.status = "idle"
+
+        self.inventory = Inventory()
+
+    def reduce_stamina(self, damage):
+        self.damage = damage
+        self.__stamina -= damage
+
+        if self.__stamina < 0:
+            self.__stamina = 0
+        return damage
+    
+    def is_alive(self):
+        if self.__stamina <= 0:
+            return False
+        if self.stamina > 0:
+            return True
+
+    def heal(self, amount):
+        if self.stamina + amount > 100:
+            self.stamina = 100
+        else:
+            self.stamina += amount
+
+        return amount
+
+    def add_item(self, item):
+        self.items.append(item)
+        return 
+    def special_ability(self, hot_streak): #boost pitchers stats temporarily
+        # TODO: Implement special ability
+        self.avg_modifier += hot_streak 
+        self.slg_modifier += hot_streak
+        return 
     
     # ### TODO: Uncomment and implement these
-    def motivational_speech(self, pitcher):
-        pitcher.stamina += 40
-        return
-    
-    def apply_coaching(self,hitter):
-        hitter.ops += self.ops_plus
-        hitter.average += self.average_plus
-        hitter.slugging += self.slugging_plus
-        return
-    
     @staticmethod
     def get_display_name():
-         return "Coach"
+        return "Coach"
     
     @staticmethod
     def get_description():
-       return "improves the stats of your batter"
-    
+         return "A powerful coach with exceptional leadership skills"
     @staticmethod
     def get_preview_image():
-        return "../graphics/game characters/coach.png"
+  
+        return "../../graphics/characters/coach.png"
 
 class Second_baseman(Character):
     """
     TODO: Implement class
     
     """
-    def __init__(self, character_name, ops, slugging, average, pos, groups, obstacle_sprites):
+    def __init__(self, pos, groups, obstacle_sprites, character_name="Second Baseman", avg_modifier=40, slg_modifier=50, is_local=False):
         super().__init__(pos, groups, obstacle_sprites)
         
         # TODO: Set character image
-        self.image = pygame.image.load('../graphics/test/player.png').convert_alpha()
+        self.image = pygame.image.load('../../graphics/characters/second_baseman.png').convert_alpha()
+        # scale to match other sprites (64x64 is typical)
+        self.image = pygame.transform.scale(self.image, (64, 64))
         self.rect = self.image.get_rect(topleft=pos)
         self.hitbox = self.rect.inflate(0, -26)
         
         # TODO: Set stats
         self.character_name = character_name
-        self.ops = ops
-        self.average = average
-        self.slugging = slugging
+        self.__avg_modifier = avg_modifier  
+        self.__slg_modifier = slg_modifier
+        self.is_local = is_local
+        self.status = "idle"
+
+        self.inventory = Inventory()
+
+    def reduce_stamina(self, damage):
+        self.damage = damage
+        self.__stamina -= damage
+
+        if self.__stamina < 0:
+            self.__stamina = 0
+        return damage
     
+    def is_alive(self):
+        if self.__stamina <= 0:
+            return False
+        if self.stamina > 0:
+            return True
 
-    def special_ability(self, player, hype_man): #boost stamina for entire team
-        player.stamina += hype_man
-        return
+    def heal(self, amount):
+        if self.stamina + amount > 100:
+            self.stamina = 100
+        else:
+            self.stamina += amount
 
+        return amount
+
+    def add_item(self, item):
+        self.items.append(item)
+        return 
+    def special_ability(self, hot_streak): #boost pitchers stats temporarily
+        # TODO: Implement special ability
+        self.avg_modifier += hot_streak 
+        self.slg_modifier += hot_streak
+        return 
+    
+    # ### TODO: Uncomment and implement these
     @staticmethod
     def get_display_name():
-         return "Second Baseman"
+        return "Second Baseman"
     
     @staticmethod
     def get_description():
-         return "an integral player for your defense as well as a consistent contact hitter on offense"
-    
+         return "A skilled second baseman with excellent fielding abilities"
     @staticmethod
     def get_preview_image():
-        return "../graphics/game characters/second_baseman.png"
+  
+        return "../../graphics/characters/second_baseman.png"
 
 # ============================================
 # CHARACTER REGISTRY (Auto-discovery)
