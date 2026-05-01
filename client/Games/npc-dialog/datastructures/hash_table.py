@@ -177,5 +177,27 @@ class HashTable:
     # Dunder helpers
     # ------------------------------------------------------------------
 
+    def __setitem__(self, key, value):
+        self.set(key, value)
+
+    def __getitem__(self, key):
+        idx = self._hash(key)
+        bucket = self._buckets[idx]
+        if bucket is not None:
+            for i in range(len(bucket)):
+                k, v = bucket[i]
+                if k == key:
+                    return v
+        raise KeyError(key)
+
+    def __delitem__(self, key):
+        self.delete(key)
+
+    def __iter__(self):
+        for bucket in self._buckets:
+            if bucket is not None:
+                for i in range(len(bucket)):
+                    yield bucket[i][0]
+
     def __str__(self):
         return f"HashTable(capacity={self.capacity}, size={self._size})"
