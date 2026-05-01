@@ -1,3 +1,4 @@
+import time
 import pygame
 from ui_helpers import BACKGROUND, BLACK, DARK_GRAY, CARD, Button, draw_text
 
@@ -6,6 +7,9 @@ class MatchHistoryScreen:
     def __init__(self, app):
         self.app = app
         self.back_button = Button(40, 560, 120, 42, "Back")
+        self.rows = None
+        self.loaded_player_id = None
+        self.match_load_printed = False
 
     def handle_event(self, event):
         if self.back_button.is_clicked(event):
@@ -22,8 +26,20 @@ class MatchHistoryScreen:
         draw_text(surface, "Match History", self.app.title_font, BLACK, 40, 35)
 
         player_id = self.app.current_user.get_player_id()
-        self.app.api.reload_sessions()
-        rows = self.app.api.get_match_history(player_id)
+
+        if self.rows is None or self.loaded_player_id != player_id:
+            start = time.perf_counter()
+
+            self.app.api.reload_sessions()
+            self.rows = self.app.api.get_match_history(player_id)
+
+            end = time.perf_counter()
+            print(f"[MatchHistoryScreen] reload + history took {end - start:.4f} seconds")
+            print(f"[MatchHistoryScreen] rows loaded: {len(self.rows)}")
+
+            self.loaded_player_id = player_id
+
+        rows = self.rows
         draw_text(surface, "Player ID: " + player_id, self.app.small_font, DARK_GRAY, 45, 90)
 
         pygame.draw.rect(surface, (220, 230, 240), pygame.Rect(45, 140, 810, 40))

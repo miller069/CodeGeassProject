@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 if PROJECT_ROOT not in sys.path:
@@ -13,6 +14,8 @@ class ProfileScreen:
     def __init__(self, app):
         self.app = app
         self.back_button = Button(40, 560, 120, 42, "Back")
+        self.profile = None
+        self.loaded_player_id = None
 
     def handle_event(self, event):
         if self.back_button.is_clicked(event):
@@ -27,8 +30,20 @@ class ProfileScreen:
             return
         surface.fill(BACKGROUND)
         draw_text(surface, "Player Profile", self.app.title_font, BLACK, 40, 35)
-        self.app.api.reload_sessions()
-        profile = self.app.api.get_profile(self.app.current_user.get_player_id())
+        player_id = self.app.current_user.get_player_id()
+
+        if self.profile is None or self.loaded_player_id != player_id:
+            start = time.perf_counter()
+
+            self.app.api.reload_sessions()
+            self.profile = self.app.api.get_profile(player_id)
+
+            end = time.perf_counter()
+            print(f"[ProfileScreen] reload + get_profile took {end - start:.4f} seconds")
+
+            self.loaded_player_id = player_id
+
+        profile = self.profile
 
         lines = ArrayList()
         lines.append("Display Name: " + profile.display_name)
