@@ -27,7 +27,7 @@ class ProfileScreen:
             return
         surface.fill(BACKGROUND)
         draw_text(surface, "Player Profile", self.app.title_font, BLACK, 40, 35)
-
+        self.app.api.reload_sessions()
         profile = self.app.api.get_profile(self.app.current_user.get_player_id())
 
         lines = ArrayList()
