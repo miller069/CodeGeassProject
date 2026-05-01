@@ -1,38 +1,38 @@
-// network.h
-// April 27th 2026
-// Ryan Miller (Code Geass)
-
-// used to prevent including the file multiple times during compilation
 #ifndef NETWORK_H
 #define NETWORK_H
 
-// string library, to include player IDs, Game IDs, and also messagese
+// allows the use of strings
 #include <string>
 
-
-// Handles communication between the client, C++ game server, and Python platform server
+// Network class used to start the server, receive requests, send messages, and stop the server
 class Network {
+private:
+
+    // Stores the server socket file descriptor
+    int server_fd;
+
+    // Stores the most recently connected client socket
+    int client_socket;
 
 public:
 
-    // Network() is the constructor used to create Network object
+    // Constructor for the Network class; creates a network object
     Network();
 
     // Starts the game server
     void startServer();
 
-    // Receives a request from a player or client
+    // function that waits for a request from a player/client
     std::string receiveRequest();
 
-    // Sends a message back to a player or client
+    // sends a message back to the client
     void sendMessage(std::string message);
 
-    // Sends completed game session results back to the Python platform server
+    // sends completed game results to the Python platform server
     void sendResultsToPython(std::string session_result);
 
     // Stops the server
     void stopServer();
 };
-
 
 #endif
