@@ -35,6 +35,9 @@ class Level:
 
         self.character_class = character_class
 
+        # Saved by create_map() so respawn() knows where to put the player back
+        self.player_spawn = None
+
         self.create_map()
 
         self.network   = NetworkClient(player_name, server_host, server_port, serializer)
@@ -202,6 +205,7 @@ class Level:
                 if col == 'x' and not floor_blocks_loaded:
                     Tile((x, y), [self.visible_sprites, self.obstacle_sprites], 'boundary')
                 if col == 'p':
+                    self.player_spawn = (x, y)
                     self.player = self.character_class(
                         (x, y),
                         [self.visible_sprites],
@@ -395,6 +399,54 @@ class Level:
         return False
 
     # ------------------------------------------------------------------
+    # Death / respawn
+    # ------------------------------------------------------------------
+
+    def handle_death_input(self, events):
+        """If the player is dead, listen for ENTER to respawn.
+
+        Returns True while the player is dead so run() can suppress the
+        normal world simulation.
+        """
+        if self.player.is_alive:
+            return False
+
+        for event in events:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                if self.player_spawn is not None:
+                    self.player.respawn(self.player_spawn)
+                # XP penalty: lose half on death (set to 0 if you want softer)
+                self.player.exp = self.player.exp // 2
+                # Drop enemy aggro so they don't immediately re-engage
+                for enemy in self.enemies:
+                    enemy.combat_status = 'patrol'
+        return True
+
+    def draw_death_overlay(self):
+        """Dim the screen and show the YOU DIED prompt."""
+        overlay = pygame.Surface(self.display_surface.get_size(), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 180))
+        self.display_surface.blit(overlay, (0, 0))
+
+        big_font  = pygame.font.Font(None, 120)
+        hint_font = pygame.font.Font(None, 36)
+
+        title = big_font.render("YOU DIED", True, (200, 30, 30))
+        self.display_surface.blit(
+            title, title.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 40))
+        )
+
+        hint = hint_font.render("Press ENTER to respawn", True, (220, 220, 220))
+        self.display_surface.blit(
+            hint, hint.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 40))
+        )
+
+        penalty = hint_font.render("(half your XP will be lost)", True, (180, 180, 180))
+        self.display_surface.blit(
+            penalty, penalty.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 80))
+        )
+
+    # ------------------------------------------------------------------
     # HUD / drawing helpers
     # ------------------------------------------------------------------
 
@@ -586,10 +638,15 @@ class Level:
     # ------------------------------------------------------------------
 
     def run(self, events):
-        # --- Dialog takes priority: freeze movement while talking ---
-        dialog_active = self.handle_dialog_input(events)
+        # --- Death takes top priority: world freezes, ENTER to respawn ---
+        is_dead = self.handle_death_input(events)
 
-        if not dialog_active:
+        # --- Dialog second: freeze movement while talking (only if alive) -
+        dialog_active = False
+        if not is_dead:
+            dialog_active = self.handle_dialog_input(events)
+
+        if not dialog_active and not is_dead:
             self.handle_events(events)
             self.handle_time_travel_input(events)
             self.handle_enemy_debug_input(events)
@@ -602,11 +659,14 @@ class Level:
                     enemy.enemy_update(self.player)
                 self.enemies.update()
                 self.player_attack_logic()
+        elif is_dead:
+            # Keep player sprite ticking so cooldowns clear and animation idles
+            self.player.update()
 
         # Always draw the world
         self.visible_sprites.custom_draw(self.player)
 
-        if not dialog_active:
+        if not dialog_active and not is_dead:
             self.record_player_state()
 
         self.draw_names()
@@ -621,6 +681,10 @@ class Level:
         # Draw dialog box on top of everything
         if self.dialog_ui:
             self.dialog_ui.draw(self.display_surface)
+
+        # Death overlay sits on top of HUD, dialog, inventory — everything
+        if is_dead:
+            self.draw_death_overlay()
 
 
 # ---------------------------------------------------------------------------

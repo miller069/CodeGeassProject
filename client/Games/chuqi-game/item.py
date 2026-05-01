@@ -165,23 +165,72 @@ def create_example_items():
     """
     Return a list of items for the player's starting inventory.
 
-    Copy the items you created in Lab 3 here, or add new ones.
-    Use Item, Weapon, Armor, Consumable, and QuestItem to create items.
+    Provides a balanced starter kit:
+      - 1 weapon  (Iron Sword)        — equipped automatically by Level
+      - 1 armor   (Leather Armor)
+      - 5 health potions              — exercises the stacking path
+      - 2 greater health potions      — second stackable type
+      - 1 quest item (Old Map)        — narrative hook for Elder Bram
+
+    Image files are looked up under graphics/items/ ; if a file is missing
+    Item falls back to a colored rectangle, so the game still runs.
 
     Returns:
         list: List of Item objects
     """
     items = []
 
-    # TODO: Copy your items from Lab 3 (or create new ones).
-    #
-    # Examples:
-    #   items.append(Weapon("Iron Sword", "A basic sword.", "graphics/items/sword.png", attack_bonus=10, value=50))
-    #   items.append(Consumable("Health Potion", "Restores 50 HP.", "graphics/items/potion.png",
-    #                           effect_type="heal", effect_amount=50, value=25, max_stack=99))
-    #   items.append(Armor("Leather Armor", "Light armor.", "graphics/items/armor.png", defense_bonus=5, value=80))
+    # --- Equipment -------------------------------------------------------
+    items.append(Weapon(
+        "Iron Sword",
+        "A sturdy iron blade. Reliable in a pinch.",
+        "graphics/items/sword.png",
+        attack_bonus=10,
+        value=100,
+    ))
+    items.append(Armor(
+        "Leather Armor",
+        "Light protection that doesn't slow you down.",
+        "graphics/items/armor.png",
+        defense_bonus=5,
+        value=80,
+    ))
 
-    print(f"Created {len(items)} example items")
+    # --- Consumables (stackable) -----------------------------------------
+    health_potion = Consumable(
+        "Health Potion",
+        "Restores 50 HP when consumed.",
+        "graphics/items/potion.png",
+        effect_type="heal",
+        effect_amount=50,
+        value=25,
+        max_stack=99,
+    )
+    health_potion.quantity = 5
+    items.append(health_potion)
+
+    greater_potion = Consumable(
+        "Greater Health Potion",
+        "Restores 100 HP. A rare alchemical brew.",
+        "graphics/items/great_potion.png",
+        effect_type="heal",
+        effect_amount=100,
+        value=75,
+        max_stack=10,
+    )
+    greater_potion.quantity = 2
+    items.append(greater_potion)
+
+    # --- Quest items -----------------------------------------------------
+    items.append(QuestItem(
+        "Old Map",
+        "A weathered map showing the path to the old forest. "
+        "Elder Bram might want to see this.",
+        "graphics/items/map.png",
+        quest_id="elder_bram_forest",
+    ))
+
+    print(f"Created {len(items)} starting items")
     return items
 
 

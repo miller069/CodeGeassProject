@@ -57,6 +57,9 @@ class Character(pygame.sprite.Sprite):
         # Experience
         self.exp = 0
 
+        # Life state — flips False on HP <= 0; respawn() resets it
+        self.is_alive = True
+
         # Inventory system
         self.inventory = Inventory(max_size=20)
         
@@ -106,7 +109,9 @@ class Character(pygame.sprite.Sprite):
         """Handle input - only for local player"""
         if not self.is_local:
             return
-            
+        if not self.is_alive:
+            return   # No movement / attack input while dead
+
         if not self.attacking:
             keys = pygame.key.get_pressed()
 
@@ -293,11 +298,37 @@ class Character(pygame.sprite.Sprite):
         self.move(self.speed)
 
     def take_damage(self, amount):
-        """Take damage with invulnerability frames."""
+        """Take damage with invulnerability frames; trigger death at 0 HP."""
+        if not self.is_alive:
+            return
         if self.vulnerable:
             self.hp = max(0, self.hp - amount)
             self.vulnerable = False
             self.hurt_time = pygame.time.get_ticks()
+            if self.hp <= 0:
+                self._on_death()
+
+    def _on_death(self):
+        """Stop the character cleanly when HP hits 0."""
+        self.is_alive = False
+        self.attacking = False
+        self.direction.x = 0
+        self.direction.y = 0
+        # Cancel any in-progress attack sprite so it doesn't linger
+        if self.destroy_attack_callback:
+            self.destroy_attack_callback()
+
+    def respawn(self, pos):
+        """Respawn at *pos* with full HP and a fresh invulnerability window."""
+        self.hp = self.max_hp
+        self.is_alive = True
+        self.vulnerable = True
+        self.hurt_time = pygame.time.get_ticks()   # brief i-frames after respawn
+        self.rect.topleft = pos
+        self.hitbox.center = self.rect.center
+        self.direction.x = 0
+        self.direction.y = 0
+        self.attacking = False
 
     def get_full_weapon_damage(self):
         """Total attack = base stat + equipped weapon bonus."""
