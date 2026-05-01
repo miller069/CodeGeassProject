@@ -82,5 +82,30 @@ class GameLauncher:
             self.last_message = "Launched Chuqi's Game"
             return self.last_message
 
+        elif game_id == "ryan_game":
+            game_dir = os.path.join(
+                self.client_dir,
+                "Games",
+                "ryan_game",
+                "code",
+                "game"
+            )
+
+            main_file = os.path.join(game_dir, "main.py")
+
+            if not os.path.isfile(main_file):
+                self.last_message = "Could not find ryan_game main.py"
+                return self.last_message
+
+            subprocess.Popen(
+                [sys.executable, main_file, str(player_id),
+                 '--server', GAME_SERVER_HOST,
+                 '--port', str(GAME_SERVER_PORT)],
+                cwd=game_dir
+            )
+
+            self.last_message = "Launched Ryan's Game"
+            return self.last_message
+
         self.last_message = "Game not connected yet: " + str(game_id)
         return self.last_message
